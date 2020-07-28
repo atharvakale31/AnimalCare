@@ -40,6 +40,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -87,7 +88,7 @@ public class HelpSectionFragment extends Fragment {
     private DatabaseReference myDatabaseRef;
     private UUID uniqueId;
     private Spinner spinner;
-    private String animalType,imageurl, Pname="name",Pno="0";
+    private String animalType,imageurl, Pname="name",Pno="0",url;
     private Uri imageUri;
     private ProgressDialog progressDialog;
     final private String FCM_API = "https://fcm.googleapis.com/fcm/send";
@@ -174,7 +175,7 @@ public class HelpSectionFragment extends Fragment {
                 animalImageView.setImageBitmap(animalBitmap);
                 Log.i("IMGURI","-> "+ imageUri.toString());
                // imageurl =getRealPathFromURI(imageUri);
-                Log.i("IMGurl","-> "+ imageurl);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -198,6 +199,7 @@ public class HelpSectionFragment extends Fragment {
             Log.i("HELPSECTIONACTANI",helpCase.getAnimalType());
             notifcationBody.put("userName",Pname);
             notifcationBody.put("mobileNo",Pno);
+            notifcationBody.put("url",helpCase.getPhotourl());
             notifcationBody.put("animalType",helpCase.getAnimalType());
             notifcationBody.put("location",helpCase.getUserLocation());
             notifcationBody.put("lat",String.valueOf(helpCase.getLatitude()));
@@ -257,15 +259,17 @@ public class HelpSectionFragment extends Fragment {
         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
         imageUri = getContext().getContentResolver().insert(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Log.i("IMGURI2","-> "+ imageUri.toString());
+        Log.i("IMGURI2","IMAGE URL "+ imageUri.toString());
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, 1);
+        Log.i("IMGURI2","IMAGE URL"+ imageUri.toString());
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         userLocationTv = view.findViewById(R.id.TvLocation);
@@ -345,12 +349,22 @@ public class HelpSectionFragment extends Fragment {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     animalBitmap.compress(Bitmap.CompressFormat.JPEG,65, byteArrayOutputStream);
                     byte[] animalImageByteArray = byteArrayOutputStream.toByteArray();
-                    storageReference = firebaseStorage.getReference("Animal Case Images");
-                    UploadTask uploadTask = storageReference.child(uniqueId.toString()).putBytes(animalImageByteArray);
+                    storageReference = firebaseStorage.getReference("Animal Case Images").child(uniqueId.toString());
+                    UploadTask uploadTask = storageReference.putBytes(animalImageByteArray);
                     uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                             Toast.makeText(getContext(), "Image Uploading Successful !", Toast.LENGTH_SHORT).show();
+
+                            storageReference.getDownloadUrl()
+                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            url=uri.toString();
+
+                                            System.out.println("URIIIIIIIII "+url);
+                                        }
+                                    });
                             uploadData();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -375,7 +389,7 @@ public class HelpSectionFragment extends Fragment {
                 String userLocation = userLocationTv.getText().toString();
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
-               final AnimalHelpCase helpCase = new AnimalHelpCase(UserName,animalType,userLocation,lat,lng);
+               final AnimalHelpCase helpCase = new AnimalHelpCase(UserName,animalType,userLocation,lat,lng,url);
                 DatabaseReference databaseReference = firebaseDatabase.getReference("Cases");
                 databaseReference.child(uniqueId.toString()).setValue(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,6 +22,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,13 +37,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.File;
+
 public class RescueActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     Button rescueLogOut,nav;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
-    String a,b,c,d="0",e="0",f;
+    String a,b,c,d="0",e="0",f,url;
     TextView name,phone,animal,latLng,loc;
+    ImageView animalImage;
     GoogleMap mMap;
     LocationManager locationManager;
     LocationListener locationListener;
@@ -60,6 +66,7 @@ public class RescueActivity extends AppCompatActivity implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rescue);
         nav=findViewById(R.id.navigate);
+        animalImage=findViewById(R.id.animalImage);
         locationManager=(LocationManager)getSystemService(LOCATION_SERVICE);
         locationListener=new LocationListener() {
             @Override
@@ -124,12 +131,17 @@ public class RescueActivity extends AppCompatActivity implements OnMapReadyCallb
                 d = bundle.getString("LAT", "Lati");
                 e = bundle.getString("LNG", "Longi");
                 f = bundle.getString("Location", "Location?");
+                url=bundle.getString("URL",null);
                 //Log.i("GETFINALHERE", a + " " + b + " " + c + " " + d + " " + e + " " + f);
                 name.setText(a);
                 phone.setText(b);
                 loc.setText(f);
                 animal.setText(c);
                 latLng.setText(d + "," +e);
+                System.out.println("URL OF IMAGE "+url);
+                Glide.with(this)
+                        .load(url)
+                                .into(animalImage);
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.map);
 
