@@ -56,7 +56,6 @@ public class CreatePostActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     StorageReference storageReference;
     FirebaseDatabase firebaseDatabase;
-    FirebaseUser firebaseUser;
     ProgressDialog progressDialog;
 
 
@@ -116,7 +115,7 @@ public class CreatePostActivity extends AppCompatActivity {
         addDescriptionET = findViewById(R.id.EditTextBlogPost);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = HomeActivity.firebaseDatabase;
+        firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
         addAnimalPhoto.setOnClickListener(new View.OnClickListener() {
@@ -138,7 +137,6 @@ public class CreatePostActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 final String blogDescr = addDescriptionET.getText().toString();
-
                 if(TextUtils.isEmpty(blogDescr)){
                     Toast.makeText(CreatePostActivity.this, "Please add some Description !", Toast.LENGTH_SHORT).show();
                     return;
@@ -155,6 +153,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
                 final FirebaseUser blogUser = firebaseAuth.getCurrentUser();
                 if(blogUser!=null){
+                    Log.d("VOLUN","TRUE");
                     databaseReference = firebaseDatabase.getReference("BlogData").push();
 
                     final String key = databaseReference.getKey();
@@ -210,6 +209,8 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     public void addTheBlogPost(BlogData myBlogData){
+
+        Log.d("VOLUN","TRUE1");
 
         databaseReference.setValue(myBlogData).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         }
         else if(fbUser!=null && !fbUser.isEmailVerified()){
-            Intent i = new Intent(MainActivity.this , RescueActivity.class);
+            Intent i = new Intent(MainActivity.this , VolunteerHomeActivity.class);
             finish();
             startActivity(i);
         }

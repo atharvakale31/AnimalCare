@@ -36,7 +36,7 @@
             android:padding="3dp"
             android:text="Supriy Jinturkar"
             android:textColor="@color/common_google_signin_btn_text_dark_focused"
-            android:textSize="21sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/TextViewDate"
@@ -84,6 +84,7 @@ and he is a 'Export' in Stock Market Bizzness."
             android:layout_height="200dp"
             android:layout_below="@id/TextViewBlog"
             android:layout_margin="15dp"
+            android:scaleType="fitXY"
             app:srcCompat="@drawable/loadingimages" />
 
     </RelativeLayout>

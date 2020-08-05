@@ -45,7 +45,7 @@ public class FeedSectionFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton floatingActionButton;
     private FirebaseAuth firebaseAuth;
-    private static FirebaseDatabase firebaseDatabase;
+    private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private String ImageUrlsList;
     private ProgressDialog progressDialog;
@@ -75,7 +75,7 @@ public class FeedSectionFragment extends Fragment {
         progressDialog.show();
 
         firebaseAuth =FirebaseAuth.getInstance();
-        firebaseDatabase = HomeActivity.firebaseDatabase;
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         updateTheData();
 

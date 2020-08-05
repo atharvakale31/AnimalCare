@@ -72,7 +72,7 @@ public class AnimalRescueLoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
                                 Toast.makeText(AnimalRescueLoginActivity.this, "Login Successful :)", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(AnimalRescueLoginActivity.this,RescueActivity.class);
+                                Intent intent = new Intent(AnimalRescueLoginActivity.this,VolunteerHomeActivity.class);
                                 finish();
                                 startActivity(intent);
                             }else{
