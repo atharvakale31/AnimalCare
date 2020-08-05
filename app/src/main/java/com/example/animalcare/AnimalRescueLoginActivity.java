@@ -77,9 +77,9 @@ public class AnimalRescueLoginActivity extends AppCompatActivity {
                                 startActivity(intent);
                             }else{
                                 Toast.makeText(AnimalRescueLoginActivity.this, "Login Failed :)", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(AnimalRescueLoginActivity.this,MainActivity.class);
-                                finish();
-                                startActivity(intent);
+                                //Intent intent = new Intent(AnimalRescueLoginActivity.this,MainActivity.class);
+                                //finish();
+                                //startActivity(intent);
                             }
                         }
                     });
