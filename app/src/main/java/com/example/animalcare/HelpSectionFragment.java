@@ -49,6 +49,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -59,6 +61,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +83,8 @@ public class HelpSectionFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase  firebaseDatabase;
+    private FirebaseFirestore db=FirebaseFirestore.getInstance();
+
     private Location location;
     private ImageView animalImageView;
     private Bitmap animalBitmap;
@@ -88,7 +93,8 @@ public class HelpSectionFragment extends Fragment {
     private DatabaseReference myDatabaseRef;
     private UUID uniqueId;
     private Spinner spinner;
-    private String animalType,imageurl, Pname="name",Pno="0",url;
+    private Spinner spinner2;
+    private String animalType,imageurl, Pname="name",Pno="0",url,cityType;
     private Uri imageUri;
     private ProgressDialog progressDialog;
     final private String FCM_API = "https://fcm.googleapis.com/fcm/send";
@@ -284,11 +290,25 @@ public class HelpSectionFragment extends Fragment {
         animals.add("Dog");
         animals.add("Cat");
 
+        final ArrayList<String> City = new ArrayList<>();
+        City.add("Select City");
+        City.add("Pune");
+
+
+
+
+
         ArrayAdapter<String> arrayAdapter
                 = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item,animals);
+        ArrayAdapter<String> arrayAdapter2
+                = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item,City);
+
 
         spinner = view.findViewById(R.id.spinner);
         spinner.setAdapter(arrayAdapter);
+
+        spinner2 = view.findViewById(R.id.city_spinner);
+        spinner2.setAdapter(arrayAdapter2);
 
 
         final ImageButton locationBtn = view.findViewById(R.id.BtnGetLocation);
@@ -323,6 +343,8 @@ public class HelpSectionFragment extends Fragment {
             public void onClick(View view) {
 
                 animalType = spinner.getSelectedItem().toString();
+                cityType = spinner2.getSelectedItem().toString();
+
 
                 if(userLocationTv.getText().toString().equals("Location Details")){
                     Toast.makeText(getContext(), "Please update your Live Location !", Toast.LENGTH_SHORT).show();
@@ -333,12 +355,16 @@ public class HelpSectionFragment extends Fragment {
                     Toast.makeText(getContext(), "Please select Animal Type !", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if(cityType.equals("Select City")){
+                    Toast.makeText(getContext(), "Please select City Type !", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if(animalBitmap==null){
                     Toast.makeText(getContext(), "Please capture the Image of injured Animal !", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                else if(!userLocationTv.getText().toString().equals("Locations Details") && !animalType.equals("Select Animal")) {
+                else if(!userLocationTv.getText().toString().equals("Locations Details") && !animalType.equals("Select Animal")&& !cityType.equals("Select city")) {
 
                     progressDialog = new ProgressDialog(getContext());
                     progressDialog.setMessage("Getting help");
@@ -382,23 +408,31 @@ public class HelpSectionFragment extends Fragment {
 
     public void uploadData(){
         animalType = spinner.getSelectedItem().toString();
+        cityType = spinner2.getSelectedItem().toString();
 
         if(!userLocationTv.getText().toString().equals("Location Details") && !userLocationTv.getText().toString().equals("")){
             if(location!=null && !animalType.equals("Select Animal")) {
-                String UserName = firebaseAuth.getCurrentUser().getEmail();
+                String UserName = firebaseAuth.getCurrentUser().getEmail().toString();
                 String userLocation = userLocationTv.getText().toString();
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
-               final AnimalHelpCase helpCase = new AnimalHelpCase(UserName,animalType,userLocation,lat,lng,url);
-                DatabaseReference databaseReference = firebaseDatabase.getReference("Cases");
-                databaseReference.child(uniqueId.toString()).setValue(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
+               final AnimalHelpCase helpCase = new AnimalHelpCase(UserName,animalType,cityType,userLocation,lat,lng,url);
+               final Map<String,Object> animals = new HashMap<>();
+               animals.put("UserName",UserName);
+                animals.put("AnimalType",animalType);
+                animals.put("CityType",cityType);
+                animals.put("UserLocation",userLocation);
+                animals.put("Lat",lat);
+                animals.put("Lng",lng);
+                animals.put("Url",url);
+                db.collection("Cases").document(uniqueId.toString()).set(animals).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
-                            //progressDialog.cancel();
+                            progressDialog.cancel();
                             getProfileData(helpCase);
-                            //sendNotify(helpCase);
-                            //Toast.makeText(getContext(), "Case Created Succesfully", Toast.LENGTH_SHORT).show();
+                            sendNotify(helpCase);
+                            Toast.makeText(getContext(), "Case Created Succesfully", Toast.LENGTH_SHORT).show();
                             Log.i("HELPCASE","Case Created Succesfully");
                         }
                         else {
@@ -406,8 +440,28 @@ public class HelpSectionFragment extends Fragment {
                             Toast.makeText(getContext(), "Can't create a case", Toast.LENGTH_SHORT).show();
                             Log.i("HELPCASE","Can't create a case");
                         }
+
                     }
                 });
+
+                //CollectionReference dbReference = firebasefirestore.getReference("Cases");
+//                databaseReference.child(uniqueId.toString()).setValue(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
+////                    @Override
+////                    public void onComplete(@NonNull Task<Void> task) {
+////                        if(task.isSuccessful()){
+////                            //progressDialog.cancel();
+////                            getProfileData(helpCase);
+////                            //sendNotify(helpCase);
+////                            //Toast.makeText(getContext(), "Case Created Succesfully", Toast.LENGTH_SHORT).show();
+////                            Log.i("HELPCASE","Case Created Succesfully");
+////                        }
+////                        else {
+////                            progressDialog.cancel();
+////                            Toast.makeText(getContext(), "Can't create a case", Toast.LENGTH_SHORT).show();
+////                            Log.i("HELPCASE","Can't create a case");
+////                        }
+////                    }
+////                });
             }
         }
     }
