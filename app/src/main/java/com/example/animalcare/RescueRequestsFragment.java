@@ -1,9 +1,12 @@
 package com.example.animalcare;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class RescueRequestsFragment extends Fragment {
 
@@ -68,6 +73,49 @@ public class RescueRequestsFragment extends Fragment {
         recyclerViewAdapter = new RescueRequestRecyclerViewAdapter(rescueCardArrayList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(recyclerViewAdapter);
+
+        recyclerViewAdapter.setOnItemClickListener(new RescueRequestRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, View view, final View itemView) {
+
+                switch (view.getId()){
+
+                    case R.id.btnAcceptRescue:
+                        startActivity(new Intent(getContext(),RescueActivity.class));
+                        Toast.makeText(getContext(), "ACCEPT rescue " +
+                                rescueCardArrayList.get(position).getAnimalType(), Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.btnDeclineRescue:
+                        createAlertDialog(position, itemView);
+                        Toast.makeText(getContext(), "Decline rescue "+
+                              rescueCardArrayList.get(position).getAnimalType(), Toast.LENGTH_SHORT).show();
+                        break;
+
+                }
+
+            }
+        });
+
+    }
+
+    public void createAlertDialog(final int position, final View itemView){
+        new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+                .setTitle("Decline help request")
+                .setMessage("Do you want to decline help request ?")
+                .setCancelable(true)
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        hideRescueButtons(position, itemView);
+                        Toast.makeText(getContext(), "help request declined", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("NO",null)
+                .show();
+    }
+
+    public void hideRescueButtons(int position, View itemView){
+        itemView.findViewById(R.id.linearLayoutRescueBtn).setVisibility(View.GONE);
     }
 
     public void temp(){

@@ -7,6 +7,7 @@ public class AnimalHelpCase {
     private String userLocation;
     private String photourl;
     private double latitude;
+
     private double longitude;
 
 

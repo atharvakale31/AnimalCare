@@ -1,9 +1,14 @@
 package com.example.animalcare;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +26,9 @@ public class VolunteerHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_volunteer_home);
+
+        subscribeToTopic();
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
 
         viewPager = findViewById(R.id.viewPagerVolunteerHome);
@@ -47,6 +55,21 @@ public class VolunteerHomeActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void subscribeToTopic(){
+        FirebaseMessaging.getInstance().subscribeToTopic("animalhelp")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Subscribed to Topic";//getString(R.string.msg_subscribed);
+                        if (!task.isSuccessful()) {
+                            msg = "Failed to subscribe";//getString(R.string.msg_subscribe_failed);
+                        }
+                        Log.i("TAGSEND",msg);
+                        Toast.makeText(VolunteerHomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }

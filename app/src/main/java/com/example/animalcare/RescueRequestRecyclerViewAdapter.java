@@ -3,6 +3,7 @@ package com.example.animalcare;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RescueRequestRecyclerViewAdapter extends RecyclerView.Adapter<RescueRequestRecyclerViewAdapter.RescueViewHolder> {
 
@@ -23,11 +22,21 @@ public class RescueRequestRecyclerViewAdapter extends RecyclerView.Adapter<Rescu
 
     }
 
+    public OnItemClickListener itemClickListener;
+
+    public interface  OnItemClickListener{
+        void onItemClick(int position, View view, View itemView);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        itemClickListener = listener;
+    }
+
     @NonNull
     @Override
     public RescueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_rescue_requests,parent,false);
-        return new RescueViewHolder(view);
+        return new RescueViewHolder(view,itemClickListener);
     }
 
     @Override
@@ -52,7 +61,7 @@ public class RescueRequestRecyclerViewAdapter extends RecyclerView.Adapter<Rescu
         private Button btnAcceptRescue, btnDeclineRescue;
         private ImageView imageViewAnimalType;
 
-        public RescueViewHolder(@NonNull View itemView) {
+        public RescueViewHolder(@NonNull final View itemView, final OnItemClickListener itemClickListener) {
             super(itemView);
 
             textViewAnimalLocationLandmark = itemView.findViewById(R.id.textViewAnimalLocationLandmark);
@@ -60,6 +69,26 @@ public class RescueRequestRecyclerViewAdapter extends RecyclerView.Adapter<Rescu
             btnAcceptRescue = itemView.findViewById(R.id.btnAcceptRescue);
             btnDeclineRescue = itemView.findViewById(R.id.btnDeclineRescue);
             imageViewAnimalType = itemView.findViewById(R.id.imageViewAnimalType);
+
+            btnAcceptRescue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if(itemClickListener!=null && position!=RecyclerView.NO_POSITION){
+                        itemClickListener.onItemClick(position, btnAcceptRescue, itemView);
+                    }
+                }
+            });
+
+            btnDeclineRescue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if(itemClickListener!=null && position!=RecyclerView.NO_POSITION){
+                        itemClickListener.onItemClick(position, btnDeclineRescue, itemView);
+                    }
+                }
+            });
 
         }
     }

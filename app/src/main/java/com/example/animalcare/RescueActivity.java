@@ -94,9 +94,6 @@ public class RescueActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         };
 
-        subscribeToTopic();
-
-
         rescueLogOut = findViewById(R.id.BtnRescueLogout);
         name = findViewById(R.id.RuserName);
         phone = findViewById(R.id.Rphone);
@@ -170,20 +167,6 @@ public class RescueActivity extends AppCompatActivity implements OnMapReadyCallb
         Log.i("GETISHERE","OKOK");
     }
 
-    public void subscribeToTopic(){
-        FirebaseMessaging.getInstance().subscribeToTopic("animalhelp")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "Subscribed to Topic";//getString(R.string.msg_subscribed);
-                        if (!task.isSuccessful()) {
-                            msg = "Failed to subscribe";//getString(R.string.msg_subscribe_failed);
-                        }
-                        Log.i("TAGSEND",msg);
-                        Toast.makeText(RescueActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
