@@ -24,7 +24,7 @@
                 android:layout_marginRight="30dp"
                 android:fontFamily="monospace"
                 android:gravity="center"
-                android:text="Please specify the details required for help purpose"
+                android:text="Rescue details"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -81,7 +81,20 @@
                     android:background="@drawable/add_location" />
 
             </LinearLayout>
-
+            <EditText
+                android:id="@+id/desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/border_frame"
+                android:inputType="textMultiLine"
+                android:hint="Type short Description
+"
+                android:padding="10dp"
+                android:textColor="#333232"
+                android:textSize="18sp" />
             <TextView
                 android:id="@+id/TvLocation"
                 android:layout_width="match_parent"
@@ -94,6 +107,7 @@
                 android:padding="10dp"
                 android:textColor="#333232"
                 android:textSize="18sp" />
+
 
 
 

@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -78,12 +79,14 @@ public class HelpSectionFragment extends Fragment {
     private LocationListener locationListener;
     private LocationManager locationManager;
     private TextView userLocationTv;
+    private EditText desc;
     private List<Address> addressList;
     private Button getHelpBtn;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase  firebaseDatabase;
     private FirebaseFirestore db=FirebaseFirestore.getInstance();
+    private Boolean accepted;
 
     private Location location;
     private ImageView animalImageView;
@@ -278,6 +281,7 @@ public class HelpSectionFragment extends Fragment {
 
 
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        desc=view.findViewById(R.id.desc);
         userLocationTv = view.findViewById(R.id.TvLocation);
         animalImageView = view.findViewById(R.id.imageViewAnimal);
         getHelpBtn = view.findViewById(R.id.BtnGetHelp);
@@ -388,10 +392,10 @@ public class HelpSectionFragment extends Fragment {
                                         public void onSuccess(Uri uri) {
                                             url=uri.toString();
 
-                                            System.out.println("URIIIIIIIII "+url);
+                                            uploadData(url);
+
                                         }
                                     });
-                            uploadData();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -406,7 +410,7 @@ public class HelpSectionFragment extends Fragment {
         });
     }
 
-    public void uploadData(){
+    public void uploadData(String url){
         animalType = spinner.getSelectedItem().toString();
         cityType = spinner2.getSelectedItem().toString();
 
@@ -414,18 +418,22 @@ public class HelpSectionFragment extends Fragment {
             if(location!=null && !animalType.equals("Select Animal")) {
                 String UserName = firebaseAuth.getCurrentUser().getEmail().toString();
                 String userLocation = userLocationTv.getText().toString();
+                String description=desc.getText().toString();
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
-               final AnimalHelpCase helpCase = new AnimalHelpCase(UserName,animalType,cityType,userLocation,lat,lng,url);
-               final Map<String,Object> animals = new HashMap<>();
-               animals.put("UserName",UserName);
-                animals.put("AnimalType",animalType);
-                animals.put("CityType",cityType);
-                animals.put("UserLocation",userLocation);
-                animals.put("Lat",lat);
-                animals.put("Lng",lng);
-                animals.put("Url",url);
-                db.collection("Cases").document(uniqueId.toString()).set(animals).addOnCompleteListener(new OnCompleteListener<Void>() {
+               final AnimalHelpCase helpCase = new AnimalHelpCase(UserName,animalType,cityType,userLocation,lat,lng,url,false,description);
+                Log.d(TAG, "url: "+ url);
+//               final Map<String,Object> animals = new HashMap<>();
+//               animals.put("UserName",UserName);
+//               animals.put("Description",description);
+//                animals.put("AnimalType",animalType);
+//                animals.put("CityType",cityType);
+//                animals.put("UserLocation",userLocation);
+//                animals.put("Lat",lat);
+//                animals.put("Lng",lng);
+//                animals.put("Url",url);
+//                animals.put("accepted",false);
+                db.collection("Cases").document("Topic").collection(cityType).document(uniqueId.toString()).set(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
