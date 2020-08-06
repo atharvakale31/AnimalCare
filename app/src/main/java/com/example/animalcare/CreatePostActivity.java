@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -56,6 +57,8 @@ public class CreatePostActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     StorageReference storageReference;
     FirebaseDatabase firebaseDatabase;
+    FirebaseFirestore db=FirebaseFirestore.getInstance();
+    FirebaseUser firebaseUser;
     ProgressDialog progressDialog;
 
 
@@ -137,6 +140,7 @@ public class CreatePostActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 final String blogDescr = addDescriptionET.getText().toString();
+
                 if(TextUtils.isEmpty(blogDescr)){
                     Toast.makeText(CreatePostActivity.this, "Please add some Description !", Toast.LENGTH_SHORT).show();
                     return;
@@ -210,9 +214,8 @@ public class CreatePostActivity extends AppCompatActivity {
 
     public void addTheBlogPost(BlogData myBlogData){
 
-        Log.d("VOLUN","TRUE1");
 
-        databaseReference.setValue(myBlogData).addOnCompleteListener(new OnCompleteListener<Void>() {
+        db.collection("BlogData").document().set(myBlogData).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
@@ -227,6 +230,21 @@ public class CreatePostActivity extends AppCompatActivity {
                 }
             }
         });
+//        databaseReference.setValue(myBlogData).addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                if(task.isSuccessful()){
+//                    Toast.makeText(CreatePostActivity.this, "Post Created Successfully !", Toast.LENGTH_SHORT).show();
+//                    progressDialog.cancel();
+//                    //Intent intent = new Intent(CreatePostActivity.this,MainActivity.class);
+//                    finish();
+//                    //startActivity(intent);
+//                }else{
+//                    progressDialog.cancel();
+//                    Toast.makeText(CreatePostActivity.this, "Post Creation Failed :(", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
     }
 }
 

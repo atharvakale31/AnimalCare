@@ -24,7 +24,7 @@
                 android:layout_marginRight="30dp"
                 android:fontFamily="monospace"
                 android:gravity="center"
-                android:text="Please specify the details required for help purpose"
+                android:text="Rescue details"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -35,16 +35,27 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/border_frame"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <Spinner
                     android:id="@+id/spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:backgroundTint="#EAA6A6" />
+                <Spinner
+                    android:id="@+id/city_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
                     android:backgroundTint="#EAA6A6" />
 
                 <TextView
@@ -54,7 +65,8 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:text="Get   your\nLive Location"
+                    android:text="Get your Live Location"
+                    android:layout_marginTop="20dp"
                     android:textColor="#222121"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -65,10 +77,24 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center"
                     android:layout_marginRight="10dp"
-                    android:src="@android:drawable/ic_menu_mylocation" />
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/add_location" />
 
             </LinearLayout>
-
+            <EditText
+                android:id="@+id/desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/border_frame"
+                android:inputType="textMultiLine"
+                android:hint="Type short Description
+"
+                android:padding="10dp"
+                android:textColor="#333232"
+                android:textSize="18sp" />
             <TextView
                 android:id="@+id/TvLocation"
                 android:layout_width="match_parent"
@@ -79,19 +105,27 @@
                 android:background="@drawable/border_frame"
                 android:inputType="textMultiLine"
                 android:padding="10dp"
-                android:text="Locations DetailsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssDetailssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssDetailssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssDetailssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssDetailssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssDetailssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
                 android:textColor="#333232"
                 android:textSize="18sp" />
 
+
+
+
             <ImageView
                 android:id="@+id/imageViewAnimal"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="40dp"
                 android:layout_marginRight="10dp"
-                app:srcCompat="@drawable/newupload_image" />
+                app:srcCompat="@drawable/upload_button" />
+            <TextView
+                android:layout_width="98dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="Upload Image" />
 
             <Button
                 android:id="@+id/BtnGetHelp"
@@ -104,6 +138,9 @@
                 android:text="Get Help"
                 android:textAllCaps="false"
                 android:textSize="20sp" />
+
+
+
 
         </LinearLayout>
     </ScrollView>

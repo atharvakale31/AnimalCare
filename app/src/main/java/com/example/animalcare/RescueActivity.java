@@ -35,6 +35,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
@@ -48,6 +49,8 @@ public class RescueActivity extends AppCompatActivity implements OnMapReadyCallb
     TextView name,phone,animal,latLng,loc;
     ImageView animalImage;
     GoogleMap mMap;
+    FirebaseFirestore db=FirebaseFirestore.getInstance();
+
     LocationManager locationManager;
     LocationListener locationListener;
     @Override

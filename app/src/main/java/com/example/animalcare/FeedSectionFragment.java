@@ -29,6 +29,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.collection.LLRBNode;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -47,6 +52,7 @@ public class FeedSectionFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private FirebaseFirestore db;
     private String ImageUrlsList;
     private ProgressDialog progressDialog;
 
@@ -104,6 +110,7 @@ public class FeedSectionFragment extends Fragment {
 
     public void updateTheData(){
         databaseReference = firebaseDatabase.getReference("BlogData");
+
 
         //Query query = databaseReference.orderByChild("blogtimeStamp").limitToLast(20);
         databaseReference.addValueEventListener(new ValueEventListener() {
