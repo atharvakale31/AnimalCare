@@ -7,12 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".FeedSectionFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <FrameLayout
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        >
-
         <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -29,12 +23,6 @@
                 android:layout_marginTop="-6dp"
                 android:layout_marginEnd="6dp"
                 android:layout_marginBottom="6dp">
-
-                <!-- <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="40dp">
-            -->
 
                 <ListView
                     android:id="@+id/listView"
@@ -60,4 +48,3 @@
 
         </RelativeLayout>
     </FrameLayout>
-</FrameLayout>

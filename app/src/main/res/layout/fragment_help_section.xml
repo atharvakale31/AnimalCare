@@ -77,24 +77,12 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center"
                     android:layout_marginRight="10dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:background="@drawable/add_location" />
 
             </LinearLayout>
-            <EditText
-                android:id="@+id/desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/border_frame"
-                android:inputType="textMultiLine"
-                android:hint="Type short Description
-"
-                android:padding="10dp"
-                android:textColor="#333232"
-                android:textSize="18sp" />
+
             <TextView
                 android:id="@+id/TvLocation"
                 android:layout_width="match_parent"
@@ -108,17 +96,30 @@
                 android:textColor="#333232"
                 android:textSize="18sp" />
 
-
+            <EditText
+                android:id="@+id/desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/border_frame"
+                android:inputType="textMultiLine"
+                android:hint="Add short Description"
+                android:padding="10dp"
+                android:textColor="#333232"
+                android:textSize="18sp" />
 
 
             <ImageView
                 android:id="@+id/imageViewAnimal"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
                 android:layout_gravity="center"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="40dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="20dp"
+                android:scaleType="fitXY"
                 app:srcCompat="@drawable/upload_button" />
             <TextView
                 android:layout_width="98dp"
@@ -138,9 +139,6 @@
                 android:text="Get Help"
                 android:textAllCaps="false"
                 android:textSize="20sp" />
-
-
-
 
         </LinearLayout>
     </ScrollView>

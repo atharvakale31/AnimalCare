@@ -20,27 +20,27 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.collection.LLRBNode;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class FeedSectionFragment extends Fragment {
 
     private ArrayList<BlogData> blogDataArrayList;
@@ -50,16 +50,13 @@ public class FeedSectionFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton floatingActionButton;
     private FirebaseAuth firebaseAuth;
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
-    private FirebaseFirestore db;
+    private FirebaseFirestore firebaseFirestore;
     private String ImageUrlsList;
     private ProgressDialog progressDialog;
 
     public FeedSectionFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,15 +71,13 @@ public class FeedSectionFragment extends Fragment {
         listView = view.findViewById(R.id.listView);
         floatingActionButton = view.findViewById(R.id.floatingActionButton);
         swipeRefreshLayout = view.findViewById(R.id.refreshLayout);
-
+        firebaseFirestore = FirebaseFirestore.getInstance();
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Updating the Feed....");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
         firebaseAuth =FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-
         updateTheData();
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +85,6 @@ public class FeedSectionFragment extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(getContext(), "Add a new Post", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(getContext(),CreatePostActivity.class);
-                //getActivity().finish();
                 startActivity(i);
             }
         });
@@ -101,7 +95,7 @@ public class FeedSectionFragment extends Fragment {
                 swipeRefreshLayout.setSize(0);
                 Toast.makeText(getContext(), "Feed Refreshed", Toast.LENGTH_LONG).show();
                updateTheData();
-                swipeRefreshLayout.setRefreshing(false);
+               swipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -109,43 +103,34 @@ public class FeedSectionFragment extends Fragment {
 
 
     public void updateTheData(){
-        databaseReference = firebaseDatabase.getReference("BlogData");
-
-
-        //Query query = databaseReference.orderByChild("blogtimeStamp").limitToLast(20);
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        firebaseFirestore.collection("BlogData")
+                .orderBy("blogTimeStamp", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                blogDataArrayList = new ArrayList<>();
-                tempList = new ArrayList<>();
-                for(DataSnapshot blogPost: dataSnapshot.getChildren()){
-
-                    tempList.add(blogPost.getValue(BlogData.class));
-                }
-
-                for(int i=tempList.size()-1;i>=0;i--){
-                    Log.i("ISFROMCACHE","->"+blogDataArrayList.size());
-                    if(blogDataArrayList.size()==0){
-                        blogDataArrayList.add(tempList.get(i));
-                        Log.i("ARRCOUNT","->"+blogDataArrayList.size());
-                        customListViewAdapter = new CustomListViewAdapter(getContext(),blogDataArrayList);
-                        listView.setAdapter(customListViewAdapter);
-                    }else {
-                        blogDataArrayList.add(tempList.get(i));
-                        customListViewAdapter.notifyDataSetChanged();
-                    }
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(error!=null || value==null){
                     if(progressDialog.isShowing())
                         progressDialog.cancel();
+                    Toast.makeText(getContext(), "Error occurred while loading feed", Toast.LENGTH_SHORT).show();
                 }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
+                else if(!value.isEmpty()){
+                    blogDataArrayList = new ArrayList<>();
+                    for(DocumentSnapshot documentSnapshot : value){
+                        blogDataArrayList.add(documentSnapshot.toObject(BlogData.class));
+                    }
+                    setUpListView();
+                }
             }
         });
-
     }
+
+    public void setUpListView(){
+        customListViewAdapter = new CustomListViewAdapter(Objects.requireNonNull(getContext()),blogDataArrayList);
+        listView.setAdapter(customListViewAdapter);
+        customListViewAdapter.notifyDataSetChanged();
+
+        if(progressDialog.isShowing())
+            progressDialog.cancel();
+    }
+
 }

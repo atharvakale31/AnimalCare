@@ -2,16 +2,21 @@ package com.example.animalcare;
 
 import android.widget.ImageView;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.firestore.ServerTimestamp;
 
-public class BlogData {
+import java.io.Serializable;
+
+public class BlogData implements Serializable {
 
     private String userName;
     private String blogDate;
     private String blogText;
     private String userID;
     private String postKey;
-    private Object BLOGTimeStamp;
+    public @ServerTimestamp
+    Timestamp blogTimeStamp;
     private String imageURL;
 
     public BlogData() {
@@ -22,14 +27,10 @@ public class BlogData {
         this.userID = userID;
         this.blogDate = blogDate;
         this.blogText = blogText;
-        this.BLOGTimeStamp = ServerValue.TIMESTAMP;
     }
 
-    public BlogData(String userName, String myBlogDate ,String blogText) {
-        this.userName = userName;
-        this.blogText = blogText;
-        this.blogDate = myBlogDate;
-
+    public Timestamp getBlogTimeStamp() {
+        return blogTimeStamp;
     }
 
     public String getImageURL() {
@@ -52,10 +53,6 @@ public class BlogData {
         return blogText;
     }
 
-    public Object getBLOGTimeStamp() {
-        return BLOGTimeStamp;
-    }
-
     public String getUserID() {
         return userID;
     }
@@ -64,27 +61,8 @@ public class BlogData {
         return postKey;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setBlogDate(String blogDate) {
-        this.blogDate = blogDate;
-    }
-
-    public void setBlogText(String blogText) {
-        this.blogText = blogText;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
     public void setPostKey(String postKey) {
         this.postKey = postKey;
     }
 
-    public void setBLOGTimeStamp(Object BLOGTimeStamp) {
-        this.BLOGTimeStamp = BLOGTimeStamp;
-    }
 }

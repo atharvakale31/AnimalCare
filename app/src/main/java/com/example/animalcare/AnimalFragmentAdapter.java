@@ -1,5 +1,6 @@
 package com.example.animalcare;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -7,8 +8,10 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 public class AnimalFragmentAdapter extends FragmentPagerAdapter {
 
-    public AnimalFragmentAdapter(FragmentManager fm) {
+
+    public AnimalFragmentAdapter(@NonNull FragmentManager fm) {
         super(fm);
+
     }
 
     @Override

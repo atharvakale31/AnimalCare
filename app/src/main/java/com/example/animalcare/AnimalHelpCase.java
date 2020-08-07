@@ -1,10 +1,10 @@
 package com.example.animalcare;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 public class AnimalHelpCase implements Serializable {
 
@@ -16,7 +16,8 @@ public class AnimalHelpCase implements Serializable {
 
     private double longitude;
     private boolean accepted;
-    //private    @ServerTimestamp Timestamp time;
+    public @ServerTimestamp
+    Timestamp timestamp;
 
     public AnimalHelpCase() {
     }
@@ -31,7 +32,6 @@ public class AnimalHelpCase implements Serializable {
         this.photourl=photourl;
         this.accepted=accepted;
         this.desc=desc;
-//        this.time= (Timestamp) ServerValue.TIMESTAMP;
     }
 
     public String getDesc() {

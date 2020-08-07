@@ -37,6 +37,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -148,14 +149,14 @@ public class HomeActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        //firebaseDatabase.setPersistenceEnabled(false);
         viewPager = findViewById(R.id.viewPager);
+        Log.d("HEREREFRAG","true");
         viewPager.setAdapter(new AnimalFragmentAdapter(getSupportFragmentManager()));
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
 
-        databaseReference =firebaseDatabase.getReference("ProfileData").child(firebaseAuth.getCurrentUser().getUid());
+        databaseReference =firebaseDatabase.getReference("ProfileData").child(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

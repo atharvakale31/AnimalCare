@@ -61,11 +61,13 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
@@ -85,20 +87,19 @@ public class HelpSectionFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase  firebaseDatabase;
-    private FirebaseFirestore db=FirebaseFirestore.getInstance();
-    private Boolean accepted;
-
+    private FirebaseFirestore db =FirebaseFirestore.getInstance();
     private Location location;
     private ImageView animalImageView;
     private Bitmap animalBitmap;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
     private DatabaseReference myDatabaseRef;
-    private UUID uniqueId;
+    private String uniqueId;
     private Spinner spinner;
     private Spinner spinner2;
-    private String animalType,imageurl, Pname="name",Pno="0",url,cityType;
+    private String animalType, Pname="name",Pno="0",url,cityType;
     private Uri imageUri;
+
     private ProgressDialog progressDialog;
     final private String FCM_API = "https://fcm.googleapis.com/fcm/send";
     final private String serverKey = "key=" + "AAAAZki8rck:APA91bGIdYfinRDbRf51zGXOfIdZlFFZsswRgjaCn3DqJF2WSwXlRo_oW-EHtO7MQ-jjJDeFlhzB_6nLx2Gayy6ht7p0M0oiGCc9N1fnKa-sRPbpCuuNCfFKUAE4NlDegoYpabMexzSS";
@@ -172,9 +173,6 @@ public class HelpSectionFragment extends Fragment {
 
         Log.i("HEREIS","TRUE");
         Log.i("IMGURI","-> "+ imageUri.toString());
-       // imageurl =getRealPathFromURI(imageUri);
-        //Log.i("IMGurl","-> "+ imageurl);
-
 
         if(requestCode == 1 && resultCode == RESULT_OK ) {
 
@@ -183,7 +181,6 @@ public class HelpSectionFragment extends Fragment {
                         getContext().getContentResolver(), imageUri);
                 animalImageView.setImageBitmap(animalBitmap);
                 Log.i("IMGURI","-> "+ imageUri.toString());
-               // imageurl =getRealPathFromURI(imageUri);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -252,15 +249,6 @@ public class HelpSectionFragment extends Fragment {
         MySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonObjectRequest);
     }
 
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getActivity().managedQuery(contentUri, proj, null, null, null);
-        int column_index = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
-
     private void getImageFromCamera(){
 
         ContentValues values = new ContentValues();
@@ -297,10 +285,6 @@ public class HelpSectionFragment extends Fragment {
         final ArrayList<String> City = new ArrayList<>();
         City.add("Select City");
         City.add("Pune");
-
-
-
-
 
         ArrayAdapter<String> arrayAdapter
                 = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item,animals);
@@ -375,11 +359,11 @@ public class HelpSectionFragment extends Fragment {
                     progressDialog.setCancelable(false);
                     progressDialog.show();
 
-                    uniqueId = UUID.randomUUID();
+                    uniqueId = AnimalRescueUtil.generateAutoId();
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     animalBitmap.compress(Bitmap.CompressFormat.JPEG,65, byteArrayOutputStream);
                     byte[] animalImageByteArray = byteArrayOutputStream.toByteArray();
-                    storageReference = firebaseStorage.getReference("Animal Case Images").child(uniqueId.toString());
+                    storageReference = firebaseStorage.getReference("Animal Case Images").child(uniqueId);
                     UploadTask uploadTask = storageReference.putBytes(animalImageByteArray);
                     uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -410,6 +394,7 @@ public class HelpSectionFragment extends Fragment {
         });
     }
 
+
     public void uploadData(String url){
         animalType = spinner.getSelectedItem().toString();
         cityType = spinner2.getSelectedItem().toString();
@@ -423,17 +408,7 @@ public class HelpSectionFragment extends Fragment {
                 double lng = location.getLongitude();
                final AnimalHelpCase helpCase = new AnimalHelpCase(UserName,animalType,cityType,userLocation,lat,lng,url,false,description);
                 Log.d(TAG, "url: "+ url);
-//               final Map<String,Object> animals = new HashMap<>();
-//               animals.put("UserName",UserName);
-//               animals.put("Description",description);
-//                animals.put("AnimalType",animalType);
-//                animals.put("CityType",cityType);
-//                animals.put("UserLocation",userLocation);
-//                animals.put("Lat",lat);
-//                animals.put("Lng",lng);
-//                animals.put("Url",url);
-//                animals.put("accepted",false);
-                db.collection("Cases").document("Topic").collection(cityType).document(uniqueId.toString()).set(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
+                db.collection("Cases").document("Topic").collection(cityType).document(uniqueId).set(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
@@ -452,24 +427,6 @@ public class HelpSectionFragment extends Fragment {
                     }
                 });
 
-                //CollectionReference dbReference = firebasefirestore.getReference("Cases");
-//                databaseReference.child(uniqueId.toString()).setValue(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
-////                    @Override
-////                    public void onComplete(@NonNull Task<Void> task) {
-////                        if(task.isSuccessful()){
-////                            //progressDialog.cancel();
-////                            getProfileData(helpCase);
-////                            //sendNotify(helpCase);
-////                            //Toast.makeText(getContext(), "Case Created Succesfully", Toast.LENGTH_SHORT).show();
-////                            Log.i("HELPCASE","Case Created Succesfully");
-////                        }
-////                        else {
-////                            progressDialog.cancel();
-////                            Toast.makeText(getContext(), "Can't create a case", Toast.LENGTH_SHORT).show();
-////                            Log.i("HELPCASE","Can't create a case");
-////                        }
-////                    }
-////                });
             }
         }
     }
