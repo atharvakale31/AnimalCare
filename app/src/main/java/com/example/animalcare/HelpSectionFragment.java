@@ -52,6 +52,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -63,8 +64,11 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,7 +218,11 @@ public class HelpSectionFragment extends Fragment {
             notifcationBody.put("lat",String.valueOf(helpCase.getLatitude()));
             notifcationBody.put("lng",String.valueOf(helpCase.getLongitude()));
             notifcationBody.put("description",String.valueOf(helpCase.getDesc()));
-            notifcationBody.put("time",helpCase.getTimestamp().toDate().toString());
+            Date c = Calendar.getInstance().getTime();
+            System.out.println("Current time => " + c);
+            SimpleDateFormat df = new SimpleDateFormat("h:mm a dd-MMM-yyyy ");
+            String formattedDate = df.format(c);
+            notifcationBody.put("time", formattedDate);
             //}
 
             notification.put("to", TOPIC);
