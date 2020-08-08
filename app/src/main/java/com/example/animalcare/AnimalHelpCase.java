@@ -8,12 +8,12 @@ import java.io.Serializable;
 
 public class AnimalHelpCase implements Serializable {
 
-    private String userName,desc;
+    private String userName,desc,userNo;
     private String animalType,cityType;
     private String userLocation;
     private String photourl;
     private double latitude;
-
+    private String rescueStatus;
     private double longitude;
     private boolean accepted;
     public @ServerTimestamp
@@ -32,6 +32,27 @@ public class AnimalHelpCase implements Serializable {
         this.photourl=photourl;
         this.accepted=accepted;
         this.desc=desc;
+        this.rescueStatus = "Waiting for rescue";
+    }
+
+    public String getUserNo() {
+        return userNo;
+    }
+
+    public void setUserNo(String userNo) {
+        this.userNo = userNo;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getRescueStatus() {
+        return rescueStatus;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
     }
 
     public String getDesc() {

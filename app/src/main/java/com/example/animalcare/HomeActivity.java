@@ -21,6 +21,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -155,27 +159,28 @@ public class HomeActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
-
-        databaseReference =firebaseDatabase.getReference("ProfileData").child(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("name").getValue()==null){
-                    Intent i = new Intent(HomeActivity.this , editprofile.class);
-                    i.putExtra("home",1);
-                    finish();
-                    startActivity(i);
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        if(firebaseAuth.getCurrentUser()!=null) {
+            firebaseFirestore.collection("ProfileData")
+                    .document(firebaseAuth.getCurrentUser().getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (!documentSnapshot.exists()) {
+                                Intent i = new Intent(HomeActivity.this, editprofile.class);
+                                i.putExtra("home", 1);
+                                finish();
+                                startActivity(i);
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(HomeActivity.this, "Some error occurred.", Toast.LENGTH_SHORT).show();
                 }
+            });
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.i("ONCANCEL","Cancelled");
-            }
-        });
-
+        }
 
 
     }

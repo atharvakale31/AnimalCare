@@ -51,6 +51,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -273,9 +274,9 @@ public class HelpSectionFragment extends Fragment {
         userLocationTv = view.findViewById(R.id.TvLocation);
         animalImageView = view.findViewById(R.id.imageViewAnimal);
         getHelpBtn = view.findViewById(R.id.BtnGetHelp);
-        firebaseAuth = firebaseAuth.getInstance();
-        firebaseDatabase = firebaseDatabase.getInstance();
-        firebaseStorage = firebaseStorage.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
         myDatabaseRef=FirebaseDatabase.getInstance().getReference("ProfileData").child(firebaseAuth.getCurrentUser().getUid());
         final ArrayList<String> animals = new ArrayList<>();
         animals.add("Select Animal");
@@ -376,7 +377,7 @@ public class HelpSectionFragment extends Fragment {
                                         public void onSuccess(Uri uri) {
                                             url=uri.toString();
 
-                                            uploadData(url);
+                                            getProfileData(url);
 
                                         }
                                     });
@@ -395,25 +396,24 @@ public class HelpSectionFragment extends Fragment {
     }
 
 
-    public void uploadData(String url){
+    public void uploadData(String url,String userName,String userNo){
         animalType = spinner.getSelectedItem().toString();
         cityType = spinner2.getSelectedItem().toString();
 
         if(!userLocationTv.getText().toString().equals("Location Details") && !userLocationTv.getText().toString().equals("")){
             if(location!=null && !animalType.equals("Select Animal")) {
-                String UserName = firebaseAuth.getCurrentUser().getEmail().toString();
+                //String UserName = firebaseAuth.getCurrentUser().getEmail();
                 String userLocation = userLocationTv.getText().toString();
                 String description=desc.getText().toString();
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
-               final AnimalHelpCase helpCase = new AnimalHelpCase(UserName,animalType,cityType,userLocation,lat,lng,url,false,description);
+               final AnimalHelpCase helpCase = new AnimalHelpCase(userName,animalType,cityType,userLocation,lat,lng,url,false,description);
+               helpCase.setUserNo(userNo);
                 Log.d(TAG, "url: "+ url);
                 db.collection("Cases").document("Topic").collection(cityType).document(uniqueId).set(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
-                            progressDialog.cancel();
-                            getProfileData(helpCase);
                             sendNotify(helpCase);
                             Toast.makeText(getContext(), "Case Created Succesfully", Toast.LENGTH_SHORT).show();
                             Log.i("HELPCASE","Case Created Succesfully");
@@ -431,22 +431,24 @@ public class HelpSectionFragment extends Fragment {
         }
     }
 
-    public void getProfileData(final AnimalHelpCase animalHelpCase){
-        myDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getProfileData(final String url){
+        db.collection("ProfileData")
+                .document(firebaseUser.getUid()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists() && documentSnapshot.get("name")!=null) {
+                            Pname = documentSnapshot.get("name").toString();
+                            Pno = documentSnapshot.get("no").toString();
+                            uploadData(url,Pname,Pno);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.child("name").getValue()!=null){
-                    Log.i("ISNULL","TRUE");
-                     Pname = dataSnapshot.child("name").getValue().toString();
-                     Pno = dataSnapshot.child("no").getValue().toString();
-                     sendNotify(animalHelpCase);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.i("data retrive","failed");
+            public void onFailure(@NonNull Exception e) {
+                if(progressDialog.isShowing())
+                    progressDialog.cancel();
+                Toast.makeText(getContext(), "failed sending request", Toast.LENGTH_SHORT).show();
             }
         });
     }

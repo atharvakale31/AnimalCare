@@ -1,5 +1,6 @@
 package com.example.animalcare;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +12,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class RescueRequestRecyclerViewAdapter extends RecyclerView.Adapter<RescueRequestRecyclerViewAdapter.RescueViewHolder> {
 
-    private ArrayList<RescueCard> rescueArrayList;
+    private ArrayList<AnimalHelpCase> rescueArrayList;
 
-    public RescueRequestRecyclerViewAdapter(ArrayList<RescueCard> rescueArrayList){
+    public RescueRequestRecyclerViewAdapter(ArrayList<AnimalHelpCase> rescueArrayList){
         this.rescueArrayList = rescueArrayList;
 
     }
@@ -42,22 +45,37 @@ public class RescueRequestRecyclerViewAdapter extends RecyclerView.Adapter<Rescu
     @Override
     public void onBindViewHolder(@NonNull RescueViewHolder holder, int position) {
 
-        RescueCard currentRescueCard = rescueArrayList.get(position);
+        AnimalHelpCase currentRescueCard = rescueArrayList.get(position);
 
-        if(currentRescueCard.getAnimalType().toLowerCase().equals("dog"))
+        if(currentRescueCard.getAnimalType().toLowerCase().equals("dog")) {
             holder.imageViewAnimalType.setImageResource(R.drawable.doggylogo);
-        else if(currentRescueCard.getAnimalType().toLowerCase().equals("cat"))
+            holder.textViewAnimalLocationLandmark.setText("A dog needs your help");
+        }
+        else if(currentRescueCard.getAnimalType().toLowerCase().equals("cat")) {
             holder.imageViewAnimalType.setImageResource(R.drawable.cat);
+            holder.textViewAnimalLocationLandmark.setText("A cat needs your help");
+        }
 
         holder.textViewRescueStatus.setText(currentRescueCard.getRescueStatus());
-        holder.textViewAnimalLocationLandmark.setText(currentRescueCard.getAnimalLocationLandmark());
+        if(currentRescueCard.getTimestamp()!=null) {
+            Date date = currentRescueCard.getTimestamp().toDate();
+
+            String time = new SimpleDateFormat("h:mm a").format(date);
+            String rescueDate = new SimpleDateFormat("dd-MMM-yyyy").format(date);
+            Log.d("DATETIME", time +" - - " + rescueDate);
+
+            holder.textViewRescueTime.setText(time);
+            holder.textViewRescueDate.setText(rescueDate);
+        }
+
+        //holder.textViewAnimalLocationLandmark.setText(currentRescueCard.getAnimalLocationLandmark());
 
     }
 
 
     public static class RescueViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView textViewAnimalLocationLandmark, textViewRescueStatus;
+        private TextView textViewAnimalLocationLandmark, textViewRescueStatus, textViewRescueTime, textViewRescueDate;
         private Button btnAcceptRescue, btnDeclineRescue;
         private ImageView imageViewAnimalType;
 
@@ -69,6 +87,8 @@ public class RescueRequestRecyclerViewAdapter extends RecyclerView.Adapter<Rescu
             btnAcceptRescue = itemView.findViewById(R.id.btnAcceptRescue);
             btnDeclineRescue = itemView.findViewById(R.id.btnDeclineRescue);
             imageViewAnimalType = itemView.findViewById(R.id.imageViewAnimalType);
+            textViewRescueTime = itemView.findViewById(R.id.textViewRescueTime);
+            textViewRescueDate = itemView.findViewById(R.id.textViewRescueDate);
 
             btnAcceptRescue.setOnClickListener(new View.OnClickListener() {
                 @Override

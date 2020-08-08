@@ -2,6 +2,7 @@ package com.example.animalcare;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -32,7 +41,8 @@ public class RescueRequestsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private RescueRequestRecyclerViewAdapter recyclerViewAdapter;
-    private ArrayList<RescueCard> rescueCardArrayList;
+    private ArrayList<AnimalHelpCase> rescueCardArrayList;
+    private FirebaseFirestore firebaseFirestore;
 
     public RescueRequestsFragment() {
         // Required empty public constructor
@@ -55,6 +65,7 @@ public class RescueRequestsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        firebaseFirestore = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -63,13 +74,57 @@ public class RescueRequestsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_rescue_requests, container, false);
     }
 
+    public void updateHelpRequests(final View view){
+
+
+        firebaseFirestore.collection("Cases")
+                .document("Topic")
+                .collection("Pune")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                if(error!=null){
+                    Snackbar.make(view,"Some error occurred :(",Snackbar.LENGTH_LONG)
+                            .show();
+                }else {
+                    if(value==null || value.isEmpty()){
+                        Snackbar snackbar = Snackbar.make(view,"No recent requests !",Snackbar.LENGTH_LONG);
+                        snackbar.setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                            }
+                        });
+                        snackbar.setActionTextColor(Color.GREEN);
+                        snackbar.show();
+                    }else{
+                        rescueCardArrayList.clear();
+                        for(DocumentSnapshot documentSnapshot : value){
+                            if(documentSnapshot!=null) {
+                                rescueCardArrayList.add(documentSnapshot.toObject(AnimalHelpCase.class));
+                            }
+                        }
+                        setUpRecyclerview();
+                    }
+                }
+            }
+        });
+
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = view.findViewById(R.id.recyclerView_rescue_requests);
         rescueCardArrayList = new ArrayList<>();
-        temp();
+        updateHelpRequests(view);
+
+    }
+
+    public void setUpRecyclerview(){
+
         recyclerViewAdapter = new RescueRequestRecyclerViewAdapter(rescueCardArrayList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -88,7 +143,7 @@ public class RescueRequestsFragment extends Fragment {
                     case R.id.btnDeclineRescue:
                         createAlertDialog(position, itemView);
                         Toast.makeText(getContext(), "Decline rescue "+
-                              rescueCardArrayList.get(position).getAnimalType(), Toast.LENGTH_SHORT).show();
+                                rescueCardArrayList.get(position).getAnimalType(), Toast.LENGTH_SHORT).show();
                         break;
 
                 }
@@ -118,21 +173,21 @@ public class RescueRequestsFragment extends Fragment {
         itemView.findViewById(R.id.linearLayoutRescueBtn).setVisibility(View.GONE);
     }
 
-    public void temp(){
-        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Kondhwa Budruk",
-                "Waiting for rescue"));
-        rescueCardArrayList.add(new RescueCard("cat","A cat needs your help near Vishwakarma College",
-                "Waiting for rescue"));
-        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Kondhwa Budruk",
-                "Waiting for rescue"));
-        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Vishwakarma College",
-                "Waiting for rescue"));
-        rescueCardArrayList.add(new RescueCard("cat","A cat needs your help near Kondhwa Budruk",
-                "Waiting for rescue"));
-        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Vishwakarma College",
-                "Waiting for rescue"));
-        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Kondhwa Budruk",
-                "Waiting for rescue"));
-    }
+//    public void temp(){
+//        rescueCardArrayList.add(new RescueCard("dog","Near Kondhwa Budruk",
+//                "Waiting for rescue"));
+//        rescueCardArrayList.add(new RescueCard("cat","Near Vishwakarma College",
+//                "Waiting for rescue"));
+//        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Kondhwa Budruk",
+//                "Waiting for rescue"));
+//        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Vishwakarma College",
+//                "Waiting for rescue"));
+//        rescueCardArrayList.add(new RescueCard("cat","A cat needs your help near Kondhwa Budruk",
+//                "Waiting for rescue"));
+//        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Vishwakarma College",
+//                "Waiting for rescue"));
+//        rescueCardArrayList.add(new RescueCard("dog","A dog needs your help near Kondhwa Budruk",
+//                "Waiting for rescue"));
+//    }
 
 }
