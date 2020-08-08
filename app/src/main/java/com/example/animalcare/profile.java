@@ -83,44 +83,6 @@ private ProgressDialog progressDialog;
         c=(TextView) findViewById(R.id.contactt);
         updateProfile();
 
-//        if(a.getText().toString().equals("")){
-//            Toast.makeText(profile.this, "Please update your profile", Toast.LENGTH_LONG).show();
-//            Intent intent =new Intent(profile.this, editprofile.class);
-//            finish();
-//            startActivity(intent);
-//        }
-
-//                reff=FirebaseDatabase.getInstance().getReference("ProfileData").child(u.getUid());
-////                //reff=FirebaseFirestore.getInstance().getReference("ProfileData").child(u.getUid());
-////
-////                reff.addValueEventListener(new ValueEventListener() {
-////                    @Override
-////                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-////
-////                        if(dataSnapshot.child("name").getValue()!=null){
-////                            Log.i("ISNULL","TRUE");
-//////                            Toast.makeText(profile.this, "Please update your profile", Toast.LENGTH_LONG).show();
-//////                            Intent intent =new Intent(profile.this, editprofile.class);
-//////                            finish();
-//////                            startActivity(intent);
-////                        //}else {
-////
-////                            loadImage();
-////                            //Toast.makeText(profile.this, "Refreshed", Toast.LENGTH_LONG).show();
-////                        }
-////                    }
-////
-////                    @Override
-////                    public void onCancelled(@NonNull DatabaseError databaseError) {
-////                        Log.i("data retrive","failed");
-////                    }
-////                });
-////
-////            //}
-////       // });
-////
-////
-////
     }
 
     public void updateProfile(){
@@ -132,7 +94,7 @@ private ProgressDialog progressDialog;
                     public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                         if(error!=null)
                         {
-                            Toast.makeText(profile.this,"Error",Toast.LENGTH_LONG);
+                            Toast.makeText(profile.this,"Error",Toast.LENGTH_LONG).show();
                             progressDialog.cancel();
                         }
                         else if(value!=null && value.get("name")!=null){
@@ -148,9 +110,10 @@ private ProgressDialog progressDialog;
                             b.setText(about);
                             c.setText(no);
 
-                            Glide.with(profile.this)
+                            Glide.with(getApplicationContext())
                                 .load(imageUrl).into(image);
-                            progressDialog.cancel();
+                            if(progressDialog.isShowing())
+                                progressDialog.cancel();
                         }
                     }
                 });

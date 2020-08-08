@@ -86,7 +86,7 @@ public class HelpSectionFragment extends Fragment {
     private List<Address> addressList;
     private Button getHelpBtn;
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
+    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseDatabase  firebaseDatabase;
     private FirebaseFirestore db =FirebaseFirestore.getInstance();
     private Location location;
@@ -211,6 +211,8 @@ public class HelpSectionFragment extends Fragment {
             notifcationBody.put("location",helpCase.getUserLocation());
             notifcationBody.put("lat",String.valueOf(helpCase.getLatitude()));
             notifcationBody.put("lng",String.valueOf(helpCase.getLongitude()));
+            notifcationBody.put("description",String.valueOf(helpCase.getDesc()));
+            notifcationBody.put("time",helpCase.getTimestamp().toDate().toString());
             //}
 
             notification.put("to", TOPIC);

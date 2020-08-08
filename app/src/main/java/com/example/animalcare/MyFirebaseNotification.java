@@ -61,6 +61,8 @@ public class MyFirebaseNotification extends FirebaseMessagingService {
             bundle.putString("LNG",remoteMessage.getData().get("lng"));
             bundle.putString("URL",remoteMessage.getData().get("url"));
             bundle.putString("Location",remoteMessage.getData().get("location"));
+            bundle.putString("description",remoteMessage.getData().get("description"));
+            bundle.putString("time",remoteMessage.getData().get("time"));
             bundle.putString("FromWhere","NOTIF");
             final Intent intent = new Intent(this, RescueActivity.class);
             intent.putExtras(bundle);

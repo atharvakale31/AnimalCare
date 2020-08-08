@@ -136,7 +136,7 @@ public class RescueRequestsFragment extends Fragment {
                 switch (view.getId()){
 
                     case R.id.btnAcceptRescue:
-                        startActivity(new Intent(getContext(),RescueActivity.class));
+                        getRescueData(position);
                         Toast.makeText(getContext(), "ACCEPT rescue " +
                                 rescueCardArrayList.get(position).getAnimalType(), Toast.LENGTH_SHORT).show();
                         break;
@@ -151,6 +151,29 @@ public class RescueRequestsFragment extends Fragment {
             }
         });
 
+    }
+
+    public void getRescueData(int position){
+        if(position>=0) {
+            AnimalHelpCase rescueCase = rescueCardArrayList.get(position);
+            Bundle bundle = new Bundle();
+            bundle.putString("USERNAME", rescueCase.getUserName());
+            String userNo = "user no";
+            if(rescueCase.getUserNo()!=null)
+                userNo = rescueCase.getUserNo();
+            bundle.putString("PHONENO", ""+userNo);
+            bundle.putString("ANIMALTYPE", rescueCase.getAnimalType());
+            bundle.putString("LAT", String.valueOf(rescueCase.getLatitude()));
+            bundle.putString("LNG", String.valueOf(rescueCase.getLongitude()));
+            bundle.putString("URL", rescueCase.getPhotourl());
+            bundle.putString("Location", rescueCase.getUserLocation());
+            bundle.putString("description",rescueCase.getDesc());
+            bundle.putString("time",rescueCase.getTimestamp().toDate().toString());
+            bundle.putString("FromWhere", "NOTIF");
+            Intent intent = new Intent(getContext(),RescueActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
     }
 
     public void createAlertDialog(final int position, final View itemView){

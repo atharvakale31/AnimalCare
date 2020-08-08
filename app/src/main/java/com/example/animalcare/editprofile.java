@@ -187,27 +187,6 @@ public class editprofile extends AppCompatActivity {
         });
     }
 
-  /* public  void url()
-    {
-        StorageReference ref=store.child(u.getUid()+"."+fileExtension(selectedImage));
-        ref.child(u.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                String imageurl=uri.toString();
-                profileData c=new profileData(imageurl);
-                c.setImageUrl(imageurl);
-
-
-            }
-        });
-        //return 0;
-    }*/
-public String fileExtension(Uri uri)
-{
-    ContentResolver cr=getContentResolver();
-    MimeTypeMap mtp=MimeTypeMap.getSingleton();
-    return MimeTypeMap.getFileExtensionFromUrl(cr.getType(uri));
-}
  private void upload(final profileData profileData)
  {
 
