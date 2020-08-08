@@ -150,8 +150,10 @@ public class HelpSectionFragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
         }
 
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if(location==null)
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         Geocoder geocoder =new Geocoder(getContext());
         try {
             if(location != null) {
