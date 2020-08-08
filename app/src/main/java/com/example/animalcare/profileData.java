@@ -3,13 +3,13 @@ package com.example.animalcare;
 import android.widget.EditText;
 
 public class profileData {
-    String name,about,no,imagename,imageUrl;
+    String name,about,no,imageUrl;
 
     public profileData(String name, String about, String no) {
         this.name = name;
         this.about = about;
         this.no = no;
-       // this.imageUrl = imageUrl;
+        this.imageUrl = imageUrl;
     }
 
     public profileData( String imageUrl) {
@@ -17,13 +17,7 @@ public class profileData {
         this.imageUrl = imageUrl;
     }
 
-    public String getImagename() {
-        return imagename;
-    }
 
-    public void setImagename(String imagename) {
-        this.imagename = imagename;
-    }
 
     public String getName() {
         return name;

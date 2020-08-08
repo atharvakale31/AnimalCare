@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -59,6 +60,7 @@ public class editprofile extends AppCompatActivity {
     ProgressDialog progressDialog;
     Bitmap bitmap;
     private  int isHome=0;
+    private FirebaseFirestore firestore;
 
     FirebaseUser u= FirebaseAuth.getInstance().getCurrentUser();
 
@@ -90,6 +92,7 @@ public class editprofile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editprofile);
 
+        firestore = FirebaseFirestore.getInstance();
         isHome = getIntent().getIntExtra("home",0);
         Log.i("ISHOME","->"+isHome);
         imagedef=(CircleImageView) findViewById(R.id.profileImage);
@@ -134,26 +137,17 @@ public class editprofile extends AppCompatActivity {
                 //upload();
                 records = new profileData(name, about, no);
 
+
+
                 if (!name.isEmpty() && !about.isEmpty() && !no.isEmpty() && bitmap != null) {
 //                    if(bitmap==null){
 //                        Toast.makeText(editprofile.this,"Please Select a Image",Toast.LENGTH_LONG).show();
 //                        progressDialog.cancel();
 //                        return;
 //                    }else {
-                    dr = mydatabase.getReference("ProfileData");
+                    //editProfileData(records);
+                    upload(records);
 
-                    dr.child(u.getUid()).setValue(records).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(editprofile.this, "Successfully Saved", Toast.LENGTH_LONG).show();
-                                upload();
-                            } else {
-                                progressDialog.cancel();
-                                Toast.makeText(editprofile.this, "Unsuccessfull,Please Try Again !", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
                 } else {
                     Toast.makeText(editprofile.this, "Fill all Details", Toast.LENGTH_LONG).show();
                     progressDialog.cancel();
@@ -166,6 +160,33 @@ public class editprofile extends AppCompatActivity {
 
 
     }
+
+    public void editProfileData(profileData records){
+
+        firestore.collection("ProfileData").document(u.getUid()).set(records).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                progressDialog.cancel();
+                Toast.makeText(editprofile.this, "Successfully Saved", Toast.LENGTH_LONG).show();
+                if(isHome ==0) {
+                    //Intent i = new Intent(editprofile.this , HomeActivity.class);
+                    finish();
+                    //startActivity(i);
+                }else  if(isHome==1){
+                    Intent i = new Intent(editprofile.this , HomeActivity.class);
+                    finish();
+                    startActivity(i);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.cancel();
+                Toast.makeText(editprofile.this, "Unsuccessfull,Please Try Again !", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
   /* public  void url()
     {
         StorageReference ref=store.child(u.getUid()+"."+fileExtension(selectedImage));
@@ -187,29 +208,34 @@ public String fileExtension(Uri uri)
     MimeTypeMap mtp=MimeTypeMap.getSingleton();
     return MimeTypeMap.getFileExtensionFromUrl(cr.getType(uri));
 }
- private void upload()
+ private void upload(final profileData profileData)
  {
 
-     StorageReference ref=store.child(u.getUid());//+"."+fileExtension(selectedImage));
+     final StorageReference ref=store.child(u.getUid());//+"."+fileExtension(selectedImage));
      Log.i("IMGURI","->"+selectedImage);
      ref.putFile(selectedImage)
              .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                  @Override
                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                      // Get a URL to the uploaded content
-                    // Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                     Toast.makeText(editprofile.this,"Photo uploaded",Toast.LENGTH_LONG).show();
-                     progressDialog.cancel();
+
+                     ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                         @Override
+                         public void onSuccess(Uri uri) {
+                             String downloadUrl = uri.toString();
+                             profileData.setImageUrl(downloadUrl);
+                             editProfileData(profileData);
+                             Toast.makeText(editprofile.this,"Photo uploaded",Toast.LENGTH_LONG).show();
+                         }
+                     }).addOnFailureListener(new OnFailureListener() {
+                         @Override
+                         public void onFailure(@NonNull Exception e) {
+                             Toast.makeText(editprofile.this,"Erro uploading photo",Toast.LENGTH_LONG).show();
+                             progressDialog.cancel();
+                         }
+                     });
+
                      Log.i("yessss", "onSuccess");
-                     if(isHome ==0) {
-                         //Intent i = new Intent(editprofile.this , HomeActivity.class);
-                         finish();
-                         //startActivity(i);
-                       }else  if(isHome==1){
-                         Intent i = new Intent(editprofile.this , HomeActivity.class);
-                         finish();
-                         startActivity(i);
-                    }
 
                  }
              })
