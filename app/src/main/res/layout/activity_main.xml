@@ -1,120 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/backgroundsplash"
     tools:context=".MainActivity">
 
     <Button
         android:id="@+id/Loginbtn"
-        android:layout_width="334dp"
-        android:layout_height="43dp"
-        android:background="@drawable/border_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/limebtn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
         android:text="Login"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        android:layout_below="@+id/frgtpassbutton"
+       />
 
     <Button
         android:id="@+id/Signupbtn"
         android:layout_width="122dp"
         android:layout_height="48dp"
-        android:layout_marginStart="250dp"
-        android:layout_marginTop="414dp"
-        android:layout_marginEnd="39dp"
-        android:layout_marginBottom="269dp"
+       android:layout_below="@id/LoginPassword"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
         android:background="@drawable/border_frame"
         android:text="Create New Account"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/frgtpassbutton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        />
 
     <Button
         android:id="@+id/frgtpassbutton"
         android:layout_width="122dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="33dp"
-        android:layout_marginTop="414dp"
-        android:layout_marginEnd="95dp"
-        android:layout_marginBottom="269dp"
+       android:layout_below="@+id/LoginPassword"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
         android:background="@drawable/border_frame"
         android:text="Forgot Password"
+
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/Signupbtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        />
 
     <EditText
         android:id="@+id/LoginPassword"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="36dp"
+      android:layout_centerHorizontal="true"
+        android:layout_below="@+id/LoginUsername"
+        android:layout_marginTop="30dp"
+        android:textAlignment="center"
+        android:background="@drawable/btnback1"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/Loginbtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LoginUsername" />
+        />
 
     <EditText
         android:id="@+id/LoginUsername"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
+       android:layout_below="@+id/Maintext2"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/btnback1"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="26dp"
+        android:textAlignment="center"
         android:ems="10"
         android:hint="Username"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/LoginPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Maintext" />
+
+        />
 
     <TextView
         android:id="@+id/Maintext"
-        android:layout_width="345dp"
-        android:layout_height="63dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
-        android:text="Welcome to Animal Care"
+        android:text="AniCare"
         android:textAlignment="center"
-        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/LoginUsername"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.454"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:id="@+id/Maintext2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_below="@+id/Maintext"
+        android:text="LogIN"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/TextViewAnimalRescue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/Loginbtn"
         android:background="@drawable/border_frame"
         android:fontFamily="sans-serif-condensed-medium"
         android:padding="10dp"
-        android:text="Animal Rescue Volunteer ? Click Here"
-        android:textColor="#008577"
+        android:text="Rescue LogIN"
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/Signupbtn"
-        app:layout_constraintStart_toStartOf="@+id/frgtpassbutton"
-        app:layout_constraintTop_toBottomOf="@+id/Loginbtn" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+         />
+</RelativeLayout>
