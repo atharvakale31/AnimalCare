@@ -28,7 +28,7 @@
                 android:layout_width="70dp"
                 android:layout_height="60dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/doggylogo" />
+                android:src="@drawable/mani" />
 
             <TextView
                 android:id="@+id/textViewRescueTime"

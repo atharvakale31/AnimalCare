@@ -1,68 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/grayback"
     tools:context=".Signup">
 
     <TextView
         android:id="@+id/Create"
-        android:layout_width="319dp"
-        android:layout_height="62dp"
-        android:layout_marginTop="68dp"
-        android:layout_marginBottom="644dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:text="Create New Account "
         android:textAlignment="center"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        />
 
     <EditText
         android:id="@+id/emailText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="75dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="16dp"
+
+        android:layout_below="@id/Create"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
         android:ems="10"
         android:hint="Enter Email"
+        android:textAlignment="center"
         android:inputType="textEmailAddress"
         android:text=""
-        app:layout_constraintBottom_toTopOf="@+id/LoginPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Create" />
+        android:background="@drawable/btnback1"
+       />
 
     <EditText
         android:id="@+id/LoginPassword"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="422dp"
+       android:layout_centerHorizontal="true"
+        android:layout_below="@id/emailText"
+        android:layout_marginTop="20dp"
         android:ems="10"
         android:hint="Enter Password"
+        android:background="@drawable/btnback1"
         android:inputType="textPassword"
-        android:textAlignment="textStart"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailText" />
+        android:textAlignment="center"
+         />
+
+    <ImageView
+        android:id="@+id/motisignup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="80dp"
+        android:layout_below="@id/Signupbtn2"
+        android:background="@drawable/moti" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lets start with\ncreating an account"
+        android:textSize="20sp"
+        android:layout_toEndOf="@id/motisignup"
+        android:layout_below="@id/Signupbtn2"
+        android:layout_marginTop="120dp"
+        android:layout_marginLeft="20dp"
+       />
 
     <Button
         android:id="@+id/Signupbtn2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_frame"
+        android:background="@drawable/limebtn"
         android:text="signup"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_marginTop="20dp"
+
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/LoginPassword"
+        />
+</RelativeLayout>

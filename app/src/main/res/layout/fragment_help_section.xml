@@ -12,7 +12,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@drawable/grayback">
 
 
             <TextView
@@ -134,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="30dp"
-                android:background="@drawable/border_frame"
+                android:background="@drawable/limebtn"
                 android:padding="10dp"
                 android:text="Get Help"
                 android:textAllCaps="false"
