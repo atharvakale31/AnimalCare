@@ -25,8 +25,9 @@
                 android:layout_marginRight="30dp"
                 android:fontFamily="monospace"
                 android:gravity="center"
-                android:text="Rescue details"
-                android:textSize="18sp"
+                android:text="Provide rescue details"
+                android:textSize="20sp"
+                android:textColor="@color/common_google_signin_btn_text_dark_focused"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -47,7 +48,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:layout_gravity="center"
-                    android:backgroundTint="#EAA6A6" />
+                    android:backgroundTint="@color/colorAccent" />
                 <Spinner
                     android:id="@+id/city_spinner"
                     android:layout_width="wrap_content"
@@ -57,7 +58,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:layout_gravity="center"
-                    android:backgroundTint="#EAA6A6" />
+                    android:backgroundTint="@color/colorAccent" />
 
                 <TextView
                     android:id="@+id/textView2"

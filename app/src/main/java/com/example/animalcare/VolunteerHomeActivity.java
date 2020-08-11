@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import androidx.annotation.NonNull;
@@ -27,15 +29,15 @@ public class VolunteerHomeActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+//            }
+//        }
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +72,10 @@ public class VolunteerHomeActivity extends AppCompatActivity {
             }
         });
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},1);
-        }
+//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
+//        {
+//            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},1);
+//        }
 
     }
 
@@ -86,10 +88,26 @@ public class VolunteerHomeActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             msg = "Failed to subscribe";//getString(R.string.msg_subscribe_failed);
                         }
-                        Log.i("TAGSEND",msg);
-                        Toast.makeText(VolunteerHomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        Log.i("SUBTOPIC",msg);
+                        //Toast.makeText(VolunteerHomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(firebaseUser!=null) {
+            FirebaseMessaging.getInstance().subscribeToTopic(firebaseUser.getUid())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    String msg = "Subscribed to Topic";//getString(R.string.msg_subscribed);
+                    if (!task.isSuccessful()) {
+                        msg = "Failed to subscribe";//getString(R.string.msg_subscribe_failed);
+                    }
+                    Log.d("SUBUID","TRUE");
+                    Log.i("SUBTOPICUID", msg);
+                    //Toast.makeText(VolunteerHomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
 }

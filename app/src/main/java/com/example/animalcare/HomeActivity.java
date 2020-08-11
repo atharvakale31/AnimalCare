@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -83,10 +84,7 @@ public class HomeActivity extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.ItemProfile){
 
-            //firebaseAuth.signOut();
-            //Toast.makeText(this, "LogOut Successfull", Toast.LENGTH_SHORT).show();
             Intent j = new Intent(HomeActivity.this, profile.class);
-            //finish();
             startActivity(j);
             return true;
         }
@@ -150,7 +148,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
+        subscribeToTopic();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         viewPager = findViewById(R.id.viewPager);
@@ -182,6 +180,25 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
+    }
 
+    public void subscribeToTopic(){
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(firebaseUser!=null) {
+            FirebaseMessaging.getInstance().subscribeToTopic(firebaseUser.getUid())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            String msg = "Subscribed to Topic";//getString(R.string.msg_subscribed);
+                            if (!task.isSuccessful()) {
+                                msg = "Failed to subscribe";//getString(R.string.msg_subscribe_failed);
+                            }
+                            Log.d("SUBUIDH","TRUE");
+                            Log.i("SUBTOPICUIDH", msg);
+                            Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 }

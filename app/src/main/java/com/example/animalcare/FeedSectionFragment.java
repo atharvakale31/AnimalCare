@@ -111,7 +111,7 @@ public class FeedSectionFragment extends Fragment {
                 if(error!=null || value==null){
                     if(progressDialog.isShowing())
                         progressDialog.cancel();
-                    Toast.makeText(getContext(), "Error occurred while loading feed", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(FeedSectionFragment.this.getContext(), "Error occurred while loading feed", Toast.LENGTH_SHORT).show();
                 }
                 else if(!value.isEmpty()){
                     blogDataArrayList = new ArrayList<>();

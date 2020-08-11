@@ -80,7 +80,7 @@ public class MyFirebaseNotification extends FirebaseMessagingService {
                     PendingIntent.FLAG_ONE_SHOT);
 
             Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),
-                    R.drawable.doggylogo);
+                    R.drawable.moti);
 
             //Uri notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
             Uri notificationSoundUri = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.buzzermessage);
@@ -109,7 +109,6 @@ public class MyFirebaseNotification extends FirebaseMessagingService {
         CharSequence adminChannelName = "New notification";
         String adminChannelDescription = "Device to devie notification";
 Log.i("ANDROO","TRUE");
-        //Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         Uri sound = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + R.raw.buzzermessage);
         NotificationChannel adminChannel;
         adminChannel = new NotificationChannel(ADMIN_CHANNEL_ID, adminChannelName, NotificationManager.IMPORTANCE_HIGH);

@@ -72,6 +72,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -148,10 +149,10 @@ public class HelpSectionFragment extends Fragment {
 
     public void getLiveLocation() {
 
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             Log.i("HEREIS","TRUE");
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
         }
 
 
@@ -164,6 +165,7 @@ public class HelpSectionFragment extends Fragment {
                 addressList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                 if (addressList.get(0) != null) {
                     Address address = addressList.get(0);
+                    //Log.i("USERLOCATION", address.getThoroughfare() + " <->" + address.getSubThoroughfare());
                     userLocationTv.setText(address.getAddressLine(0));
                     Log.i("USERLOC", addressList.toString());
                 }
@@ -294,9 +296,13 @@ public class HelpSectionFragment extends Fragment {
         animals.add("Select Animal");
         animals.add("Dog");
         animals.add("Cat");
+        animals.add("Cow");
+        animals.add("Snake");
 
         final ArrayList<String> City = new ArrayList<>();
         City.add("Select City");
+        City.add("Bhilai");
+        City.add("Durg");
         City.add("Pune");
 
         ArrayAdapter<String> arrayAdapter
@@ -413,7 +419,7 @@ public class HelpSectionFragment extends Fragment {
         cityType = spinner2.getSelectedItem().toString();
 
         if(!userLocationTv.getText().toString().equals("Location Details") && !userLocationTv.getText().toString().equals("")){
-            if(location!=null && !animalType.equals("Select Animal")) {
+            if(location!=null && !animalType.equals("Select Animal") && !cityType.equals("Select City")) {
                 //String UserName = firebaseAuth.getCurrentUser().getEmail();
                 String userLocation = userLocationTv.getText().toString();
                 String description=desc.getText().toString();
@@ -421,6 +427,8 @@ public class HelpSectionFragment extends Fragment {
                 double lng = location.getLongitude();
                final AnimalHelpCase helpCase = new AnimalHelpCase(userName,animalType,cityType,userLocation,lat,lng,url,false,description);
                helpCase.setUserNo(userNo);
+               if(firebaseUser!=null)
+                helpCase.setUserUid(firebaseUser.getUid());
                 Log.d(TAG, "url: "+ url);
                 db.collection("Cases").document("Topic").collection(cityType).document(uniqueId).set(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class AnimalHelpCase implements Serializable {
 
-    private String userName,desc,userNo;
+    private String userName,desc,userNo,userUid;
     private String animalType,cityType;
     private String userLocation;
     private String photourl;
@@ -16,6 +16,9 @@ public class AnimalHelpCase implements Serializable {
     private String rescueStatus;
     private double longitude;
     private boolean accepted;
+    private boolean isCompleted;
+    private String rescuerUid;
+    private String rescueDocumentId;
     public @ServerTimestamp
     Timestamp timestamp;
 
@@ -32,7 +35,45 @@ public class AnimalHelpCase implements Serializable {
         this.photourl=photourl;
         this.accepted=accepted;
         this.desc=desc;
+        this.isCompleted = false;
+        this.rescuerUid = "null";
         this.rescueStatus = "Waiting for rescue";
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
+    }
+
+    public void setRescueStatus(String rescueStatus) {
+        this.rescueStatus = rescueStatus;
+    }
+
+    public String getUserUid() {
+        return userUid;
+    }
+
+    public void setUserUid(String userUid) {
+        this.userUid = userUid;
+    }
+
+    public String getRescuerUid() {
+        return rescuerUid;
+    }
+
+    public void setRescuerUid(String rescuerUid) {
+        this.rescuerUid = rescuerUid;
+    }
+
+    public String getRescueDocumentId() {
+        return rescueDocumentId;
+    }
+
+    public void setRescueDocumentId(String rescueDocumentId) {
+        this.rescueDocumentId = rescueDocumentId;
     }
 
     public String getUserNo() {

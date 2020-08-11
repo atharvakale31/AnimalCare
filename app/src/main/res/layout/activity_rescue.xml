@@ -12,19 +12,14 @@
         android:layout_height="wrap_content">
 
 
-        <Button
-            android:id="@+id/BtnRescueLogout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="8dp"
-            android:text="LogOut"
-            android:textSize="16sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/navigate"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/navigate" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/googlemaps"
+            android:layout_margin="5dp"
+            app:layout_constraintBottom_toBottomOf="@+id/navigate"
+            app:layout_constraintStart_toEndOf="@+id/navigate"
+            app:layout_constraintTop_toTopOf="@+id/navigate" />
 
         <Button
             android:id="@+id/navigate"
@@ -32,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Navigate"
+            android:layout_marginStart="10dp"
             app:layout_constraintStart_toEndOf="@+id/textView7"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -197,6 +193,17 @@
                     android:padding="5dp"
                     android:text="User phone no"
                     android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/btnCallHelpSeeker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="12dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:src="@drawable/ic_baseline_call_24" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -227,49 +234,50 @@
                     android:textSize="20sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <TextView
-                    android:id="@+id/e"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:padding="5dp"
-                    android:text="Coordinates: "
-                    android:textColor="#000"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/Rlatlng"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:padding="5dp"
-                    android:text="Coordinates"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
             <ImageView
                 android:id="@+id/animalImage"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_margin="10dp"
+                android:layout_marginVertical="20dp"
+                android:layout_marginHorizontal="10dp"
                 android:scaleType="fitXY"
                 tools:srcCompat="@tools:sample/avatars" />
 
-            <fragment
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="20dp"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btnCancelRescue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cancel Rescue"
+                    android:visibility="gone"
+                    android:backgroundTint="#D50000"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFF"
+                    android:textAllCaps="false"
+                    android:layout_marginHorizontal="20dp"/>
+
+                <Button
+                    android:id="@+id/btnRescueCompleted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rescue Completed"
+                    android:visibility="gone"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    android:textColor="#FFFF"
+                    android:backgroundTint="@color/colorPrimaryDark"
+                    android:layout_marginHorizontal="20dp"/>
+
+            </LinearLayout>
+
 
         </LinearLayout>
 

@@ -7,6 +7,8 @@
     app:cardUseCompatPadding="true"
     android:layout_marginHorizontal="5dp"
     android:layout_marginVertical="5dp"
+    android:id="@+id/cardRescueRequests"
+    android:foreground="?attr/selectableItemBackground"
     android:elevation="10dp">
 
     <LinearLayout
@@ -89,24 +91,28 @@
                 android:text="Rescue"
                 android:textSize="16sp"
                 android:textAllCaps="false"
+                android:layout_gravity="center_vertical"
                 android:textStyle="bold"
                 android:textColor="#FFFF"
                 android:backgroundTint="@color/colorPrimaryDark"
                 />
 
-            <Button
-                android:id="@+id/btnDeclineRescue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Decline"
-                android:layout_marginTop="10dp"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FFFF"
-                android:backgroundTint="#D50000"
-                android:textAllCaps="false"/>
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewCurrentTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginTop="10dp"
+        android:text=""
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="2dp"
+        android:textColor="#FFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
 </androidx.cardview.widget.CardView>
