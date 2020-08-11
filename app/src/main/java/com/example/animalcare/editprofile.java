@@ -12,6 +12,8 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +42,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -59,6 +62,7 @@ public class editprofile extends AppCompatActivity {
     profileData records;
     ProgressDialog progressDialog;
     Bitmap bitmap;
+    private byte[] byteArray;
     private  int isHome=0;
     private FirebaseFirestore firestore;
 
@@ -114,6 +118,15 @@ public class editprofile extends AppCompatActivity {
         aboutT=findViewById(R.id.abouttxt);
         contactT=findViewById(R.id.contactno);
 
+        Intent profileDataIntent = getIntent();
+        nameT.setText(profileDataIntent.getStringExtra("name"));
+        aboutT.setText(profileDataIntent.getStringExtra("about"));
+        contactT.setText(profileDataIntent.getStringExtra("contact"));
+        byteArray = profileDataIntent.getByteArrayExtra("image");
+        bitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
+
+        if(bitmap!=null)
+            imagedef.setImageBitmap(bitmap);
         save=findViewById(R.id.Savebtn);
         mydatabase=FirebaseDatabase.getInstance();
 
@@ -189,46 +202,53 @@ public class editprofile extends AppCompatActivity {
 
  private void upload(final profileData profileData)
  {
+     if(byteArray!=null && byteArray.length>0) {
+         final StorageReference ref = store.child(u.getUid());
+         Log.i("IMGURI", "->" + selectedImage);
+         ref.putBytes(byteArray)
+                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                     @Override
+                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-     final StorageReference ref=store.child(u.getUid());//+"."+fileExtension(selectedImage));
-     Log.i("IMGURI","->"+selectedImage);
-     ref.putFile(selectedImage)
-             .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                 @Override
-                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                     // Get a URL to the uploaded content
+                         ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                             @Override
+                             public void onSuccess(Uri uri) {
+                                 String downloadUrl = uri.toString();
+                                 profileData.setImageUrl(downloadUrl);
+                                 editProfileData(profileData);
+                                 Toast.makeText(editprofile.this, "Photo uploaded", Toast.LENGTH_LONG).show();
+                             }
+                         }).addOnFailureListener(new OnFailureListener() {
+                             @Override
+                             public void onFailure(@NonNull Exception e) {
+                                 Toast.makeText(editprofile.this, "Erro uploading photo", Toast.LENGTH_LONG).show();
+                                 progressDialog.cancel();
+                             }
+                         });
 
-                     ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                         @Override
-                         public void onSuccess(Uri uri) {
-                             String downloadUrl = uri.toString();
-                             profileData.setImageUrl(downloadUrl);
-                             editProfileData(profileData);
-                             Toast.makeText(editprofile.this,"Photo uploaded",Toast.LENGTH_LONG).show();
-                         }
-                     }).addOnFailureListener(new OnFailureListener() {
-                         @Override
-                         public void onFailure(@NonNull Exception e) {
-                             Toast.makeText(editprofile.this,"Erro uploading photo",Toast.LENGTH_LONG).show();
-                             progressDialog.cancel();
-                         }
-                     });
+                         Log.i("yessss", "onSuccess");
 
-                     Log.i("yessss", "onSuccess");
-
-                 }
-             })
-             .addOnFailureListener(new OnFailureListener() {
-                 @Override
-                 public void onFailure(@NonNull Exception exception) {
-                     // Handle unsuccessful uploads
-                     // ...
-                     Toast.makeText(editprofile.this,"Error while Uploading Photo,Please Try Again",Toast.LENGTH_LONG).show();
-                     progressDialog.cancel();
-                     Log.i("NOOOOO", "onFailure: ");
-                 }
- });
+                     }
+                 })
+                 .addOnFailureListener(new OnFailureListener() {
+                     @Override
+                     public void onFailure(@NonNull Exception exception) {
+                         Toast.makeText(editprofile.this, "Error while Uploading Photo,Please Try Again", Toast.LENGTH_LONG).show();
+                         progressDialog.cancel();
+                         Log.i("NOOOOO", "onFailure: ");
+                     }
+                 });
+     }
+     else {
+         Toast.makeText(editprofile.this, "Please choose a photo", Toast.LENGTH_LONG).show();
+     }
  }
+
+    public byte[] getImageBitmapByteArray(Bitmap bitmapProfileImage){
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmapProfileImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -238,9 +258,10 @@ public class editprofile extends AppCompatActivity {
             selectedImage=data.getData();
 
             try{
-                bitmap= MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectedImage);
-                image=(CircleImageView) findViewById(R.id.profileImage);
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectedImage);
+                image = findViewById(R.id.profileImage);
                 image.setImageBitmap(bitmap);
+                byteArray = getImageBitmapByteArray(bitmap);
             }catch (IOException e)
             {
                 e.printStackTrace();

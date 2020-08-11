@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
@@ -41,12 +43,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class profile extends AppCompatActivity {
 
-FirebaseDatabase dt;
-
-DatabaseReference reff;
 static TextView a,b,c;
 CircleImageView image;
-Button refresh;
 private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 private ProgressDialog progressDialog;
 
@@ -59,6 +57,10 @@ private ProgressDialog progressDialog;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
+
+        a= findViewById(R.id.namet);
+        b= findViewById(R.id.aboutt);
+        c= findViewById(R.id.contactt);
 
         progressDialog = new ProgressDialog(profile.this);
         progressDialog.setMessage("Loading your Profile !");
@@ -73,16 +75,24 @@ private ProgressDialog progressDialog;
             @Override
             public void onClick(View view) {
                 Intent intent =new Intent(profile.this, editprofile.class);
-                finish();
+                intent.putExtra("image",getImageBitmapByteArray());
+                intent.putExtra("name",a.getText().toString());
+                intent.putExtra("about",b.getText().toString());
+                intent.putExtra("contact",c.getText().toString());
+
                 startActivity(intent);
             }
         });
 
-        a=(TextView) findViewById(R.id.namet);
-        b=(TextView) findViewById(R.id.aboutt);
-        c=(TextView) findViewById(R.id.contactt);
         updateProfile();
 
+    }
+
+    public byte[] getImageBitmapByteArray(){
+        Bitmap bitmapProfileImage = ((BitmapDrawable)image.getDrawable()).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmapProfileImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
     }
 
     public void updateProfile(){
@@ -111,7 +121,10 @@ private ProgressDialog progressDialog;
                             c.setText(no);
 
                             Glide.with(getApplicationContext())
-                                .load(imageUrl).into(image);
+                                    .load(imageUrl)
+                                    .placeholder(R.drawable.dogprofile)
+                                    .error(R.drawable.dogprofile)
+                                    .into(image);
                             if(progressDialog.isShowing())
                                 progressDialog.cancel();
                         }
@@ -119,30 +132,4 @@ private ProgressDialog progressDialog;
                 });
     }
 
-//    public void loadImage(){
-//        try{
-//            final File files =File.createTempFile("image","jpeg");
-//
-//            sr.getFile(files).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-//                    Bitmap bitmap= BitmapFactory.decodeFile(files.getAbsolutePath());
-//                    if(bitmap!=null) {
-//                        image.setImageBitmap(bitmap);
-//                        Toast.makeText(profile.this, "Profile Loaded !", Toast.LENGTH_LONG).show();
-//                        progressDialog.cancel();
-//                    }
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//                    Toast.makeText(profile.this,"Error while loading...",Toast.LENGTH_LONG).show();
-//                    progressDialog.cancel();
-//                }
-//            });}
-//        catch(IOException e)
-//        {
-//            e.printStackTrace();
-//        }
-//    }
 }

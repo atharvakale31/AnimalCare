@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".editprofile">
+    tools:context=".editprofile"
+    android:background="@drawable/grayback">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImage"
-
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="40dp"
         android:src="@drawable/dogprofile"
         app:civ_border_color="#000000"
         app:civ_border_width="2dp" />
@@ -22,21 +22,22 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/profileImage"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="100dp"
-        android:layout_marginTop="199dp"
-        android:text="Name" />
+        android:layout_marginTop="30dp"
+        android:text="Name"
+        android:textSize="16sp"
+        android:textColor="@android:color/secondary_text_light"/>
 
     <EditText
         android:id="@+id/nametxt"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:layout_alignParentTop="true"
-
+        android:layout_below="@id/textView2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="232dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="textPersonName" />
 
@@ -44,37 +45,44 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/nametxt"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="282dp"
+        android:layout_marginTop="30dp"
+        android:textSize="16sp"
+        android:textColor="@android:color/secondary_text_light"
         android:text="About" />
 
     <EditText
         android:id="@+id/abouttxt"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/textView3"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="309dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
+        android:textSize="16sp"
         android:inputType="textPersonName" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/abouttxt"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="364dp"
+        android:layout_marginTop="30dp"
+        android:textSize="16sp"
+        android:textColor="@android:color/secondary_text_light"
         android:text="Contact NO" />
 
     <EditText
         android:id="@+id/contactno"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/textView4"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="397dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="40dp"
         android:ems="10"
         android:inputType="phone" />
 
@@ -84,7 +92,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/contactno"
         android:layout_alignParentStart="true"
-
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="164dp"
