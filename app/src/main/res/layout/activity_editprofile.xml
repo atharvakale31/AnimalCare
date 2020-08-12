@@ -38,6 +38,10 @@
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="16dp"
+        android:padding="10dp"
+        android:alpha="0.8"
+        android:textColor="@color/common_google_signin_btn_text_light_pressed"
+        android:background="@drawable/new_border_frame"
         android:ems="10"
         android:inputType="textPersonName" />
 
@@ -60,8 +64,11 @@
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="16dp"
+        android:padding="10dp"
+        android:alpha="0.8"
+        android:textColor="@color/common_google_signin_btn_text_light_pressed"
+        android:background="@drawable/new_border_frame"
         android:ems="10"
-        android:textSize="16sp"
         android:inputType="textPersonName" />
 
     <TextView
@@ -82,6 +89,10 @@
         android:layout_below="@id/textView4"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
+        android:padding="10dp"
+        android:textColor="@color/common_google_signin_btn_text_light_pressed"
+        android:alpha="0.8"
+        android:background="@drawable/new_border_frame"
         android:layout_marginHorizontal="40dp"
         android:ems="10"
         android:inputType="phone" />
@@ -97,6 +108,9 @@
         android:layout_marginStart="164dp"
         android:layout_marginTop="41dp"
         android:layout_marginEnd="159dp"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorPrimary"
         android:text="Save" />
 
 

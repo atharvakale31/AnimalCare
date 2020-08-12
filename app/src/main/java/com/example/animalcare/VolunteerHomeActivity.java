@@ -1,21 +1,30 @@
 package com.example.animalcare;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -28,24 +37,23 @@ import androidx.viewpager2.widget.ViewPager2;
 public class VolunteerHomeActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
+    private FirebaseFirestore firebaseFirestore;
+    private FirebaseUser firebaseUser;
+    private String volunteerOrganization;
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-//            }
-//        }
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_volunteer_home);
 
-        subscribeToTopic();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        SharedPreferences sharedPreferences = getSharedPreferences("com.sjcoders.mynotesapp", Context.MODE_PRIVATE);
+        volunteerOrganization = sharedPreferences.getString("topic","topic");
+        if(!volunteerOrganization.equals("topic"))
+            subscribeToTopic(volunteerOrganization);
         BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
 
         viewPager = findViewById(R.id.viewPagerVolunteerHome);
@@ -72,24 +80,62 @@ public class VolunteerHomeActivity extends AppCompatActivity {
             }
         });
 
-//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
-//        {
-//            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},1);
-//        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //getUserOrg();
 
     }
 
-    public void subscribeToTopic(){
-        FirebaseMessaging.getInstance().subscribeToTopic("animalhelp")
+    public void getUserOrg(){
+
+        if(firebaseUser!=null){
+            firebaseFirestore.collection("VolunteerProfileData")
+                    .document(firebaseUser.getUid())
+                    .addSnapshotListener(VolunteerHomeActivity.this, new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                            if(error!=null){
+                                Log.d("SUBVOLUNTEER","failed");
+                            }
+                            else{
+                                if(value!=null && value.exists()){
+                                    String volunteerOrganization =value.getString("volunteerOrganization");
+                                    if(volunteerOrganization!=null) {
+                                        String topic = "topic";
+                                        if (volunteerOrganization.equals("PFA Durg"))
+                                            topic = "Durg";
+                                        else if(volunteerOrganization.equals("PFA Bhilai"))
+                                            topic = "Bhilai";
+                                        else if (volunteerOrganization.equals("Pune NGO"))
+                                            topic = "Pune";
+
+                                        //subscribeToTopic(topic);
+                                    }
+
+                                }
+                            }
+
+                        }
+                    });
+        }
+    }
+
+    public void subscribeToTopic(final String topic){
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "Subscribed to Topic";//getString(R.string.msg_subscribed);
+                        String msg = "Subscribed to Topic "+topic;
                         if (!task.isSuccessful()) {
-                            msg = "Failed to subscribe";//getString(R.string.msg_subscribe_failed);
+                            msg = "Failed to subscribe "+topic;
                         }
-                        Log.i("SUBTOPIC",msg);
-                        //Toast.makeText(VolunteerHomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        Log.i("SUBTOPIC",msg+ " "+ topic);
+                        Toast.makeText(VolunteerHomeActivity.this, "Welcome back :)", Toast.LENGTH_SHORT).show();
                     }
                 });
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -98,13 +144,12 @@ public class VolunteerHomeActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    String msg = "Subscribed to Topic";//getString(R.string.msg_subscribed);
+                    String msg = "Subscribed to Topic";
                     if (!task.isSuccessful()) {
-                        msg = "Failed to subscribe";//getString(R.string.msg_subscribe_failed);
+                        msg = "Failed to subscribe";
                     }
                     Log.d("SUBUID","TRUE");
                     Log.i("SUBTOPICUID", msg);
-                    //Toast.makeText(VolunteerHomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             });
         }

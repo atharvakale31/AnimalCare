@@ -125,7 +125,7 @@ public class FeedSectionFragment extends Fragment {
     }
 
     public void setUpListView(){
-        customListViewAdapter = new CustomListViewAdapter(Objects.requireNonNull(getContext()),blogDataArrayList);
+        customListViewAdapter = new CustomListViewAdapter(requireContext(),blogDataArrayList);
         listView.setAdapter(customListViewAdapter);
         customListViewAdapter.notifyDataSetChanged();
 

@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //Toast.makeText(MainActivity.this, "Animal Rescue", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this,AnimalRescueLoginActivity.class);
-                finish();
+                //finish();
                 startActivity(intent);
             }
         });
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if(validate()) {
+                    Log.d("isVer","true");
                     fb.signInWithEmailAndPassword(email,pwd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {

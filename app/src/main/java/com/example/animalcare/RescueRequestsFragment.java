@@ -1,8 +1,10 @@
 package com.example.animalcare;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -47,6 +49,8 @@ public class RescueRequestsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private String volunteerOrganization;
+
     private RecyclerView recyclerView;
     private RescueRequestRecyclerViewAdapter recyclerViewAdapter;
     private ArrayList<AnimalHelpCase> rescueCardArrayList;
@@ -80,6 +84,7 @@ public class RescueRequestsFragment extends Fragment {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Getting rescue details...");
         progressDialog.setTitle("Rescue...");
+        progressDialog.setCancelable(false);
     }
 
     @Override
@@ -93,7 +98,7 @@ public class RescueRequestsFragment extends Fragment {
 
         firebaseFirestore.collection("Cases")
                 .document("Topic")
-                .collection("Pune")
+                .collection(volunteerOrganization)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -140,6 +145,8 @@ public class RescueRequestsFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView_rescue_requests);
         rescueCardArrayList = new ArrayList<>();
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("com.sjcoders.mynotesapp", Context.MODE_PRIVATE);
+        volunteerOrganization = sharedPreferences.getString("topic","topic");
         updateHelpRequests(view);
 
     }
@@ -163,12 +170,6 @@ public class RescueRequestsFragment extends Fragment {
                         //Toast.makeText(getContext(), "ACCEPT rescue " +
                         //        rescueCardArrayList.get(position).getAnimalType(), Toast.LENGTH_SHORT).show();
                         break;
-                    //case R.id.btnDeclineRescue:
-                    //    createAlertDialog(position, itemView);
-                        //Toast.makeText(getContext(), "Decline rescue "+
-                        //        rescueCardArrayList.get(position).getAnimalType(), Toast.LENGTH_SHORT).show();
-                     //   break;
-
                     case R.id.cardRescueRequests:
                         AnimalHelpCase helpCase = rescueCardArrayList.get(position);
                         if(!helpCase.isAccepted() ||
@@ -246,6 +247,10 @@ public class RescueRequestsFragment extends Fragment {
                     Toast.makeText(getContext(), "Failed to update rescue details", Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+        else{
+            if (progressDialog.isShowing())
+                progressDialog.cancel();
         }
     }
 

@@ -149,10 +149,10 @@ public class HelpSectionFragment extends Fragment {
 
     public void getLiveLocation() {
 
-        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             Log.i("HEREIS","TRUE");
-            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+            ActivityCompat.requestPermissions(requireActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
         }
 
 
@@ -176,31 +176,10 @@ public class HelpSectionFragment extends Fragment {
 
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        Log.i("HEREIS","TRUE");
-        Log.i("IMGURI","-> "+ imageUri.toString());
-
-        if(requestCode == 1 && resultCode == RESULT_OK ) {
-
-            try {
-                animalBitmap = MediaStore.Images.Media.getBitmap(
-                        getContext().getContentResolver(), imageUri);
-                animalImageView.setImageBitmap(animalBitmap);
-                Log.i("IMGURI","-> "+ imageUri.toString());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
 
     public void sendNotify(AnimalHelpCase helpCase){
 
-        TOPIC ="/topics/animalhelp";// "/topics/userABC"; //topic must match with what the receiver subscribed to
+        TOPIC ="/topics/"+helpCase.getCityType();// "/topics/userABC"; //topic must match with what the receiver subscribed to
         NOTIFICATION_TITLE = "ANIMAL HELP REQUIRED";//edtTitle.getText().toString();
         NOTIFICATION_MESSAGE = "This animal is injured , Please Help !";//edtMessage.getText().toString();
 
@@ -276,6 +255,28 @@ public class HelpSectionFragment extends Fragment {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, 1);
         Log.i("IMGURI2","IMAGE URL"+ imageUri.toString());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.i("HEREIS","TRUE");
+        Log.i("IMGURI","-> "+ imageUri.toString());
+
+        if(requestCode == 1 && resultCode == RESULT_OK ) {
+
+            try {
+                animalBitmap = MediaStore.Images.Media.getBitmap(
+                        getContext().getContentResolver(), imageUri);
+                animalImageView.setImageBitmap(animalBitmap);
+                Log.i("IMGURI","-> "+ imageUri.toString());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     @Override

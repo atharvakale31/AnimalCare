@@ -3,17 +3,23 @@ package com.example.animalcare;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,6 +50,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -62,6 +69,7 @@ public class editprofile extends AppCompatActivity {
     profileData records;
     ProgressDialog progressDialog;
     Bitmap bitmap;
+    private Uri imageUri;
     private byte[] byteArray;
     private  int isHome=0;
     private FirebaseFirestore firestore;
@@ -87,6 +95,10 @@ public class editprofile extends AppCompatActivity {
                 //upload();
             }
         }
+
+        if(requestCode == 2 &&  grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED ){
+            getImageFromCamera();
+        }
     }
 
 
@@ -108,7 +120,8 @@ public class editprofile extends AppCompatActivity {
                 }
                 else
                 {
-                    getPhoto();
+                    //getPhoto();
+                    choosePhotoDialog();
                     //upload();
                 }
             }
@@ -137,7 +150,7 @@ public class editprofile extends AppCompatActivity {
             public void onClick(View view) {
 
                 progressDialog = new ProgressDialog(editprofile.this);
-                progressDialog.setMessage("Upadting your profile, Please Wait :)");
+                progressDialog.setMessage("Updating your profile, Please Wait :)");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
 
@@ -153,12 +166,7 @@ public class editprofile extends AppCompatActivity {
 
 
                 if (!name.isEmpty() && !about.isEmpty() && !no.isEmpty() && bitmap != null) {
-//                    if(bitmap==null){
-//                        Toast.makeText(editprofile.this,"Please Select a Image",Toast.LENGTH_LONG).show();
-//                        progressDialog.cancel();
-//                        return;
-//                    }else {
-                    //editProfileData(records);
+
                     upload(records);
 
                 } else {
@@ -202,7 +210,9 @@ public class editprofile extends AppCompatActivity {
 
  private void upload(final profileData profileData)
  {
-     if(byteArray!=null && byteArray.length>0) {
+     if(bitmap!=null && u!=null) {
+         byteArray = getImageBitmapByteArray(bitmap);
+         if(byteArray!=null && byteArray.length>0){
          final StorageReference ref = store.child(u.getUid());
          Log.i("IMGURI", "->" + selectedImage);
          ref.putBytes(byteArray)
@@ -238,17 +248,84 @@ public class editprofile extends AppCompatActivity {
                          Log.i("NOOOOO", "onFailure: ");
                      }
                  });
+        }
      }
      else {
          Toast.makeText(editprofile.this, "Please choose a photo", Toast.LENGTH_LONG).show();
      }
  }
 
+    public void choosePhotoDialog(){
+
+        try {
+            View photoOptionView = getLayoutInflater().inflate(R.layout.bottom_sheet_photo_option, null);
+            AlertDialog.Builder alertDialogBuilder;
+            alertDialogBuilder = new AlertDialog.Builder(editprofile.this);
+            alertDialogBuilder
+                    .setView(photoOptionView)
+                    .setCancelable(true);
+            final AlertDialog alertDialog = alertDialogBuilder.create();
+            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            photoOptionView.findViewById(R.id.imageViewCamera).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ContextCompat.checkSelfPermission(editprofile.this,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(editprofile.this,new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+                    }
+                    else{
+                        if(alertDialog.isShowing())
+                            alertDialog.cancel();
+                        getImageFromCamera();
+                    }
+
+                }
+            });
+            photoOptionView.findViewById(R.id.imageViewGallery).setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
+                @Override
+                public void onClick(View v) {
+                    if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+                    }
+                    else
+                    {
+                        if(alertDialog.isShowing())
+                            alertDialog.cancel();
+                        getPhoto();
+                    }
+
+                }
+            });
+            alertDialog.show();
+        }
+        catch (Exception e){
+            if(progressDialog.isShowing())
+                progressDialog.cancel();
+            Log.d("ERROREXCEPTION",e.toString());
+        }
+
+    }
+
     public byte[] getImageBitmapByteArray(Bitmap bitmapProfileImage){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmapProfileImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
         return stream.toByteArray();
     }
+
+    private void getImageFromCamera(){
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+        imageUri = getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        assert imageUri != null;
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, 2);
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -261,11 +338,26 @@ public class editprofile extends AppCompatActivity {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectedImage);
                 image = findViewById(R.id.profileImage);
                 image.setImageBitmap(bitmap);
-                byteArray = getImageBitmapByteArray(bitmap);
+                //byteArray = getImageBitmapByteArray(bitmap);
             }catch (IOException e)
             {
                 e.printStackTrace();
             }
+        }
+
+        if(requestCode == 2 && resultCode == RESULT_OK ) {
+
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(
+                        getContentResolver(), imageUri);
+                imagedef.setImageBitmap(bitmap);
+                //byteArray = getImageBitmapByteArray(bitmapProfile);
+                Log.d("IMGBYTEARRCAME","TRUE");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 }
