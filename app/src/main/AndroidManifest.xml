@@ -22,17 +22,29 @@
         android:roundIcon="@drawable/moti"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" android:theme="@style/splashTheme"></activity>
+        <activity android:name=".PhoneVerificationActivity"></activity>
+        <activity android:name=".RescueSignUpActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/splashTheme" />
         <activity android:name=".VolunteerHomeActivity" />
         <activity android:name=".RescueActivity" />
-        <activity android:name=".AnimalRescueLoginActivity" android:theme="@style/splashTheme"/>
+        <activity
+            android:name=".AnimalRescueLoginActivity"
+            android:theme="@style/splashTheme" />
         <activity android:name=".CreatePostActivity" />
         <activity android:name=".HomeActivity" />
-        <activity android:name=".Signup" android:theme="@style/splashTheme"/>
-        <activity android:name=".profile" android:theme="@style/splashTheme" />
+        <activity
+            android:name=".Signup"
+            android:theme="@style/splashTheme" />
+        <activity
+            android:name=".profile"
+            android:theme="@style/splashTheme" />
         <activity android:name=".editprofile" />
         <activity android:name=".ForgotPass" />
-        <activity android:name=".splashscreen" android:theme="@style/splashTheme">
+        <activity
+            android:name=".splashscreen"
+            android:theme="@style/splashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

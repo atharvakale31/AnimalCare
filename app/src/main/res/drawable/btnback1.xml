@@ -7,14 +7,14 @@
       android:pathData="M22,0L263,0A22,22 0,0 1,285 22L285,22A22,22 0,0 1,263 44L22,44A22,22 0,0 1,0 22L0,22A22,22 0,0 1,22 0z"
       android:strokeAlpha="0.523"
       android:strokeWidth="1"
-      android:fillColor="#fff"
+      android:fillColor="@android:color/white"
       android:strokeColor="#00000000"
       android:fillAlpha="0.523"/>
   <path
       android:pathData="M22,0.5L263,0.5A21.5,21.5 0,0 1,284.5 22L284.5,22A21.5,21.5 0,0 1,263 43.5L22,43.5A21.5,21.5 0,0 1,0.5 22L0.5,22A21.5,21.5 0,0 1,22 0.5z"
       android:strokeAlpha="0.523"
       android:strokeWidth="1"
-      android:fillColor="#00000000"
-      android:strokeColor="#707070"
+      android:fillColor="@android:color/white"
+      android:strokeColor="@color/common_google_signin_btn_text_light_default"
       android:fillAlpha="0.523"/>
 </vector>
