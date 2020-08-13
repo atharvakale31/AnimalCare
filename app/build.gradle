@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        config {
+            storeFile file('C:\\Users\\Lenovo Store\\Desktop\\AniCareKey.jks')
+            storePassword 'abc12345'
+            keyAlias 'key0'
+            keyPassword 'abc12345'
+        }
+    }
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.example.animalcare"
@@ -15,6 +23,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
