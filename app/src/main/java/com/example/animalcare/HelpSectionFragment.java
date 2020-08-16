@@ -1,9 +1,11 @@
 package com.example.animalcare;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -16,6 +18,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,12 +60,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.Permission;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,7 +99,7 @@ public class HelpSectionFragment extends Fragment {
     private TextView userLocationTv;
     private EditText desc;
     private List<Address> addressList;
-    private Button getHelpBtn;
+    private Button getHelpBtn,selfhelpbtn;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseDatabase  firebaseDatabase;
@@ -127,6 +137,7 @@ public class HelpSectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_help_section, container, false);
     }
@@ -154,6 +165,7 @@ public class HelpSectionFragment extends Fragment {
             Log.i("HEREIS","TRUE");
             ActivityCompat.requestPermissions(requireActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
         }
+
 
 
         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -293,6 +305,16 @@ public class HelpSectionFragment extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
         myDatabaseRef=FirebaseDatabase.getInstance().getReference("ProfileData").child(firebaseAuth.getCurrentUser().getUid());
+        selfhelpbtn=view.findViewById(R.id.selfhelpbtn);
+        selfhelpbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(new Intent(getActivity(),MapActivity.class));
+                startActivity(intent);
+                getActivity();
+
+            }
+        });
         final ArrayList<String> animals = new ArrayList<>();
         animals.add("Select Animal");
         animals.add("Dog");

@@ -7,12 +7,14 @@
         android:name="android.hardware.Camera"
         android:required="true" />
 
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
@@ -22,7 +24,11 @@
         android:roundIcon="@drawable/moti"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PhoneVerificationActivity"></activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDyFCZX4gauYeB5r6lRJPaLXqtwOUvYLpk" />
+        <activity android:name=".MapActivity"></activity>
+        <activity android:name=".PhoneVerificationActivity" />
         <activity android:name=".RescueSignUpActivity" />
         <activity
             android:name=".MainActivity"
@@ -52,9 +58,7 @@
             </intent-filter>
         </activity>
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
