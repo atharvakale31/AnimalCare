@@ -8,10 +8,16 @@
         <item name="colorAccent">#23BA28</item>
     </style>
 
-    <style name="splashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="splashTheme1" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">#23BA28</item>
+    </style>
+    <style name="splashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/cardview_dark_background</item>
+        <item name="colorPrimaryDark">@color/cardview_dark_background</item>
         <item name="colorAccent">#23BA28</item>
     </style>
 

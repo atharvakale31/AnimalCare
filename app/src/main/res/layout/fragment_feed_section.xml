@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:src="@drawable/ic_mode_edit_black_24dp"
-            app:backgroundTint="#008577"
+            app:backgroundTint="@color/cardview_dark_background"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="40dp"

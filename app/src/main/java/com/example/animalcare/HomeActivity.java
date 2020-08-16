@@ -2,6 +2,7 @@ package com.example.animalcare;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.viewpager.widget.ViewPager;
 
@@ -15,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
@@ -54,6 +56,7 @@ public class HomeActivity extends AppCompatActivity {
     final private String serverKey = "key=" + "AAAAZki8rck:APA91bGIdYfinRDbRf51zGXOfIdZlFFZsswRgjaCn3DqJF2WSwXlRo_oW-EHtO7MQ-jjJDeFlhzB_6nLx2Gayy6ht7p0M0oiGCc9N1fnKa-sRPbpCuuNCfFKUAE4NlDegoYpabMexzSS";
     final private String contentType = "application/json";
     final String TAG = "NOTIFICATION TAG";
+    private Toolbar tb;
 
     String NOTIFICATION_TITLE;
     String NOTIFICATION_MESSAGE;
@@ -151,6 +154,9 @@ public class HomeActivity extends AppCompatActivity {
         subscribeToTopic();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
+        tb=(Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(tb);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         viewPager = findViewById(R.id.viewPager);
         Log.d("HEREREFRAG","true");
         viewPager.setAdapter(new AnimalFragmentAdapter(getSupportFragmentManager()));
