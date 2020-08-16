@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:alpha=".9"
-    android:background="@drawable/grayback">
+    android:background="@drawable/profback">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileI"
@@ -33,10 +33,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
-            android:background="@drawable/bluebtn"
             android:ems="10"
             android:textAlignment="center"
-            android:textColor="#000000"
+            android:fontFamily="@font/aldrich"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"
             android:text=""/>
@@ -46,10 +46,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
-            android:background="@drawable/bluebtn"
             android:ems="10"
             android:textAlignment="center"
-            android:textColor="#000000"
+            android:fontFamily="@font/aldrich"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"
             android:text=""/>
@@ -59,10 +59,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
-            android:background="@drawable/bluebtn"
+            android:fontFamily="@font/aldrich"
             android:ems="10"
             android:textAlignment="center"
-            android:textColor="#000000"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"
             android:text=""/>
@@ -80,7 +80,7 @@
         android:layout_marginStart="285dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="6dp"
-        android:background="@drawable/limebtn"
+        android:background="@drawable/bluebtn"
         android:textAllCaps="false"
         android:text="Edit" />
 

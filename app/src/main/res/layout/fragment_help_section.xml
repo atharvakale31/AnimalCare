@@ -31,7 +31,7 @@
                     android:layout_marginTop="60dp"
                     android:textStyle="italic"
                     android:textColor="#000000"
-                    android:text="Hello i am mani\n\n Click self help if you want to get nearby pet clinics for self help \n\n Fill below form to Get help from rescuer"/>
+                    android:text="Hello i am mani\n\n Fill below form to Get help from rescuer"/>
             </LinearLayout>
 
             <Button
@@ -41,6 +41,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_gravity="center"
                 android:text="Self Help"
+                android:visibility="invisible"
                 android:background="@drawable/btnback1"/>
 
             <TextView

@@ -29,12 +29,12 @@
             android:value="AIzaSyDyFCZX4gauYeB5r6lRJPaLXqtwOUvYLpk" />
         <activity android:name=".MapActivity"></activity>
         <activity android:name=".PhoneVerificationActivity" />
-        <activity android:name=".RescueSignUpActivity" />
+        <activity android:name=".RescueSignUpActivity" android:theme="@style/splashTheme" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/splashTheme" />
-        <activity android:name=".VolunteerHomeActivity" />
-        <activity android:name=".RescueActivity" />
+        <activity android:name=".VolunteerHomeActivity" android:theme="@style/splashTheme"/>
+        <activity android:name=".RescueActivity" android:theme="@style/splashTheme"/>
         <activity
             android:name=".AnimalRescueLoginActivity"
             android:theme="@style/splashTheme" />
@@ -46,7 +46,7 @@
         <activity
             android:name=".profile"
             android:theme="@style/splashTheme" />
-        <activity android:name=".editprofile" />
+        <activity android:name=".editprofile" android:theme="@style/splashTheme" />
         <activity android:name=".ForgotPass" />
         <activity
             android:name=".splashscreen"
