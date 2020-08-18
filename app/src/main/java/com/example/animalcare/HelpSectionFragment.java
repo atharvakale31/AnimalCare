@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
@@ -99,13 +101,13 @@ public class HelpSectionFragment extends Fragment {
     private TextView userLocationTv;
     private EditText desc;
     private List<Address> addressList;
-    private Button getHelpBtn,selfhelpbtn;
+    private Button getHelpBtn,selfhelpbtn,uploadImage;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseDatabase  firebaseDatabase;
     private FirebaseFirestore db =FirebaseFirestore.getInstance();
     private Location location;
-    private ImageView animalImageView;
+    private ImageView animalImageView,test;
     private Bitmap animalBitmap;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
@@ -115,6 +117,22 @@ public class HelpSectionFragment extends Fragment {
     private Spinner spinner2;
     private String animalType, Pname="name",Pno="0",url,cityType;
     private Uri imageUri;
+    private int indexDot=0;
+
+    ViewPager viewPager;
+    LinearLayout sliderDotspanel;
+    private int dotscount;
+    //private ImageView[] dots;
+    ArrayList<ImageView> dots=new ArrayList<ImageView>();
+    ArrayList<Integer> images=new ArrayList<Integer>();
+    ArrayList<Bitmap> imagebitmap=new ArrayList<Bitmap>();
+    ArrayList<String> imageuri=new ArrayList<String>();
+
+
+
+
+    MyCustomPagerAdapter myCustomPagerAdapter;
+
 
     private ProgressDialog progressDialog;
     final private String FCM_API = "https://fcm.googleapis.com/fcm/send";
@@ -255,18 +273,19 @@ public class HelpSectionFragment extends Fragment {
         MySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void getImageFromCamera(){
+    public void getImageFromCamera(){
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-        imageUri = getContext().getContentResolver().insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        imageUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         Log.i("IMGURI2","IMAGE URL "+ imageUri.toString());
+        imageuri.add(imageUri.toString());
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, 1);
         Log.i("IMGURI2","IMAGE URL"+ imageUri.toString());
+
     }
 
     @Override
@@ -281,7 +300,9 @@ public class HelpSectionFragment extends Fragment {
             try {
                 animalBitmap = MediaStore.Images.Media.getBitmap(
                         getContext().getContentResolver(), imageUri);
-                animalImageView.setImageBitmap(animalBitmap);
+                imagebitmap.add(animalBitmap);
+                viewPager.getAdapter().notifyDataSetChanged();
+                //animalImageView.setImageBitmap(animalBitmap);
                 Log.i("IMGURI","-> "+ imageUri.toString());
 
             } catch (Exception e) {
@@ -295,7 +316,7 @@ public class HelpSectionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        test=view.findViewById(R.id.test);
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         desc=view.findViewById(R.id.desc);
         userLocationTv = view.findViewById(R.id.TvLocation);
@@ -306,6 +327,35 @@ public class HelpSectionFragment extends Fragment {
         firebaseStorage = FirebaseStorage.getInstance();
         myDatabaseRef=FirebaseDatabase.getInstance().getReference("ProfileData").child(firebaseAuth.getCurrentUser().getUid());
         selfhelpbtn=view.findViewById(R.id.selfhelpbtn);
+        uploadImage=view.findViewById(R.id.uploadImage);
+
+        sliderDotspanel = (LinearLayout) view.findViewById(R.id.SliderDots);
+        viewPager = (ViewPager)view.findViewById(R.id.viewPager);
+
+       // images.add(R.drawable.image_1);
+        //images.add(R.drawable.image_2);
+
+        myCustomPagerAdapter = new MyCustomPagerAdapter(getContext(), imagebitmap);
+        viewPager.setAdapter(myCustomPagerAdapter);
+        dotscount = myCustomPagerAdapter.getCount();
+
+
+
+
+
+        uploadImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+               // images.add(R.drawable.image_3);
+                getImageFromCamera();
+                dotscount+=1;
+                displaydot();
+
+            }
+        });
+
+
         selfhelpbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -355,7 +405,7 @@ public class HelpSectionFragment extends Fragment {
         });
 
 
-        animalImageView.setOnClickListener(new View.OnClickListener() {
+        viewPager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -448,7 +498,7 @@ public class HelpSectionFragment extends Fragment {
                 String description=desc.getText().toString();
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
-               final AnimalHelpCase helpCase = new AnimalHelpCase(userName,animalType,cityType,userLocation,lat,lng,url,false,description);
+               final AnimalHelpCase helpCase = new AnimalHelpCase(userName,animalType,cityType,userLocation,lat,lng,imageuri,false,description);
                helpCase.setUserNo(userNo);
                if(firebaseUser!=null)
                 helpCase.setUserUid(firebaseUser.getUid());
@@ -495,5 +545,50 @@ public class HelpSectionFragment extends Fragment {
             }
         });
     }
+    public void displaydot()
+    {
+        int i;
+        for( i = indexDot; i < dotscount; i++){
+
+            dots.add(new ImageView(getContext()));
+            dots.get(i).setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.non_active_dot));
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            params.setMargins(8, 0, 8, 0);
+
+            sliderDotspanel.addView(dots.get(i), params);
+
+
+        }
+        indexDot=i;
+
+
+        dots.get(0).setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.active_dot));
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                for(int i = 0; i< dotscount; i++){
+                    dots.get(i).setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.non_active_dot));
+                }
+
+                dots.get(position).setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.active_dot));
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
 
 }

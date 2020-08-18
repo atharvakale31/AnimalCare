@@ -4,7 +4,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
     signingConfigs {
         config {
-            storeFile file('desktop\\anicare_key')
+            storeFile file('C:\\Users\\Atharva\\AndroidStudioProjects\\AniCareKey.jks')
             storePassword 'abc12345'
             keyAlias 'key0'
             keyPassword 'abc12345'

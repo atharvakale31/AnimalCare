@@ -5,13 +5,14 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class AnimalHelpCase implements Serializable {
 
     private String userName,desc,userNo,userUid;
     private String animalType,cityType;
     private String userLocation;
-    private String photourl;
+    private ArrayList<String> photourl;
     private double latitude;
     private String rescueStatus;
     private double longitude;
@@ -25,7 +26,7 @@ public class AnimalHelpCase implements Serializable {
     public AnimalHelpCase() {
     }
 
-    public AnimalHelpCase(String userName, String animalType, String cityType, String userLocation, double latitude, double longitude, String photourl, Boolean accepted, String desc) {
+    public AnimalHelpCase(String userName, String animalType, String cityType, String userLocation, double latitude, double longitude, ArrayList<String> photourl, Boolean accepted, String desc) {
         this.animalType = animalType;
         this.cityType = cityType;
         this.userName = userName;
@@ -125,7 +126,7 @@ public class AnimalHelpCase implements Serializable {
         return userLocation;
     }
 
-    public String getPhotourl() {
+    public ArrayList<String> getPhotourl() {
         return photourl;
     }
 

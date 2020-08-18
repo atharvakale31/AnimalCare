@@ -46,6 +46,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -59,7 +60,8 @@ public class RescueActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     private FirebaseFirestore firebaseFirestore;
     private String a, b, c, d = "0", e = "0", f;
-    private String url,rescuerUid,rescueDocumentId,cityType;
+    private String rescuerUid,rescueDocumentId,cityType;
+    private ArrayList<String> url;
     private boolean isAccepted;
     private boolean isCompleted;
     TextView name, phone, animal, loc,textViewDescription,textViewTime;
@@ -102,6 +104,7 @@ public class RescueActivity extends AppCompatActivity {
                 d = bundle.getString("LAT", "0");
                 e = bundle.getString("LNG", "0");
                 f = bundle.getString("Location", "Location?");
+
                 url=bundle.getString("URL",null);
                 cityType=bundle.getString("cityType",null);
                 rescuerUid=bundle.getString("rescuerUid",null);
