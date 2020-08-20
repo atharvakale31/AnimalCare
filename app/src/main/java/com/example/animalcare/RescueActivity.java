@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -28,6 +29,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +54,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RescueActivity extends AppCompatActivity {
-
+    AdapterforRescueAct AdapterforRescueAct;
     Button nav,btnCancelRescue, btnRescueCompleted;
     private ImageButton btnCallHelpSeeker;
     private ProgressDialog progressDialog;
@@ -61,19 +63,28 @@ public class RescueActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private String a, b, c, d = "0", e = "0", f;
     private String rescuerUid,rescueDocumentId,cityType;
-    private ArrayList<String> url;
+    private String url;
     private boolean isAccepted;
     private boolean isCompleted;
     TextView name, phone, animal, loc,textViewDescription,textViewTime;
     ImageView animalImage;
     Bundle bundle;
+    ArrayList<ImageView> dots=new ArrayList<ImageView>();
+    ArrayList<String> urls=new ArrayList<String>();
+
+
+    private int indexDot=0;
+
+    ViewPager viewPager;
+    LinearLayout sliderDotspanel;
+    private int dotscount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rescue);
         nav=findViewById(R.id.navigate);
-        animalImage=findViewById(R.id.animalImage);
+        //animalImage=findViewById(R.id.animalImage);
         btnCallHelpSeeker = findViewById(R.id.btnCallHelpSeeker);
         btnCancelRescue = findViewById(R.id.btnCancelRescue);
         btnRescueCompleted = findViewById(R.id.btnRescueCompleted);
@@ -94,6 +105,14 @@ public class RescueActivity extends AppCompatActivity {
         progressDialog.setMessage("Canceling your rescue help....");
         progressDialog.setCancelable(false);
         Toast.makeText(this, "Rescue Activity !", Toast.LENGTH_SHORT).show();
+        sliderDotspanel = (LinearLayout) findViewById(R.id.SliderDots);
+        viewPager = (ViewPager)findViewById(R.id.viewPager);
+
+        // images.add(R.drawable.image_1);
+        //images.add(R.drawable.image_2);
+
+
+
 
 
         if(bundle!=null){
@@ -104,8 +123,16 @@ public class RescueActivity extends AppCompatActivity {
                 d = bundle.getString("LAT", "0");
                 e = bundle.getString("LNG", "0");
                 f = bundle.getString("Location", "Location?");
-
                 url=bundle.getString("URL",null);
+                url=url.substring(1,url.length()-1);
+                String[] arr=url.split(", ");
+                for(int i=0;i<arr.length;i++)
+                {
+                    Log.d("URL!@#!#",arr[i]);
+                    urls.add(arr[i]);
+                }
+
+                Log.d("URLLLLLL",url);
                 cityType=bundle.getString("cityType",null);
                 rescuerUid=bundle.getString("rescuerUid",null);
                 rescueDocumentId=bundle.getString("rescueDocumentId",null);
@@ -118,6 +145,7 @@ public class RescueActivity extends AppCompatActivity {
                     btnRescueCompleted.setVisibility(View.VISIBLE);
                 }
 
+
                 name.setText(a);
                 phone.setText(b);
                 loc.setText(f);
@@ -125,12 +153,11 @@ public class RescueActivity extends AppCompatActivity {
                 textViewDescription.setText(bundle.getString("description","Help Description"));
                 textViewTime.setText(bundle.getString("time","Help Time"));
                 //latLng.setText("LAT: " + d + "\n" + "LNG: "+e);
-                System.out.println("URL OF IMAGE "+url);
-                Glide.with(getApplicationContext())
-                        .load(url)
-                        .error(new AnimalImageUtil().getAnimalImageResourceId(c))
-                        .placeholder(R.drawable.loadingimages)
-                        .into(animalImage);
+               AdapterforRescueAct = new AdapterforRescueAct(this, urls);
+                viewPager.setAdapter(AdapterforRescueAct);
+                dotscount = AdapterforRescueAct.getCount();
+                displaydot();
+
 
                 Toast.makeText(this, "Rescue Details Loaded", Toast.LENGTH_SHORT).show();
                 nav.setOnClickListener(new View.OnClickListener() {
@@ -274,6 +301,50 @@ public class RescueActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("NO",null)
                 .show();
+    }
+    public void displaydot()
+    {
+        int i;
+        for( i = indexDot; i < dotscount; i++){
+
+            dots.add(new ImageView(getApplicationContext()));
+            dots.get(i).setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            params.setMargins(8, 0, 8, 0);
+
+            sliderDotspanel.addView(dots.get(i), params);
+
+
+        }
+        indexDot=i;
+
+
+        dots.get(0).setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                for(int i = 0; i< dotscount; i++){
+                    dots.get(i).setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                }
+
+                dots.get(position).setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     }

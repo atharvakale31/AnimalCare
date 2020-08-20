@@ -1,5 +1,7 @@
 package com.example.animalcare;
 
+import androidx.navigation.NavType;
+
 import com.google.firebase.Timestamp;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.ServerTimestamp;
@@ -22,6 +24,7 @@ public class AnimalHelpCase implements Serializable {
     private String rescueDocumentId;
     public @ServerTimestamp
     Timestamp timestamp;
+
 
     public AnimalHelpCase() {
     }

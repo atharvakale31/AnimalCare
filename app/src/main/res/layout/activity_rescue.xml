@@ -234,14 +234,27 @@
                     android:textSize="20sp" />
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/animalImage"
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_marginVertical="20dp"
                 android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="20dp"
                 android:scaleType="fitXY"
-                tools:srcCompat="@tools:sample/avatars" />
+                 />
+            <LinearLayout
+                android:id="@+id/SliderDots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:gravity="center_vertical|center_horizontal"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/viewPager" />
 
             <LinearLayout
                 android:layout_width="match_parent"

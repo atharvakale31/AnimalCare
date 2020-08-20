@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class MyFirebaseNotification extends FirebaseMessagingService {
@@ -46,12 +47,6 @@ public class MyFirebaseNotification extends FirebaseMessagingService {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser!=null && !firebaseUser.isEmailVerified()) {
 
-            Log.i("USERNAME", "->"+remoteMessage.getData().get("userName"));
-            Log.i("PHONENO", "->"+remoteMessage.getData().get("mobileNo"));
-            Log.i("ANIMALTYPE","->"+ remoteMessage.getData().get("animalType"));
-            Log.i("Location","->"+ remoteMessage.getData().get("location"));
-            Log.i("LAT", "->"+remoteMessage.getData().get("lat"));
-            Log.i("LNG", "->"+remoteMessage.getData().get("lng"));
 
             Bundle bundle = new Bundle();
             bundle.putString("USERNAME",remoteMessage.getData().get("userName"));
@@ -60,6 +55,7 @@ public class MyFirebaseNotification extends FirebaseMessagingService {
             bundle.putString("LAT",remoteMessage.getData().get("lat"));
             bundle.putString("LNG",remoteMessage.getData().get("lng"));
             bundle.putString("URL",remoteMessage.getData().get("url"));
+            Log.d("KEYYYYYYYYYYYYY",remoteMessage.getData().get("url"));
             bundle.putString("Location",remoteMessage.getData().get("location"));
             bundle.putString("description",remoteMessage.getData().get("description"));
             bundle.putString("time",remoteMessage.getData().get("time"));

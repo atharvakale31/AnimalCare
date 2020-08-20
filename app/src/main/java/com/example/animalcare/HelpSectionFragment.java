@@ -124,9 +124,9 @@ public class HelpSectionFragment extends Fragment {
     private int dotscount;
     //private ImageView[] dots;
     ArrayList<ImageView> dots=new ArrayList<ImageView>();
-    ArrayList<Integer> images=new ArrayList<Integer>();
+    //ArrayList<Integer> images=new ArrayList<Integer>();
     ArrayList<Bitmap> imagebitmap=new ArrayList<Bitmap>();
-    ArrayList<String> imageuri=new ArrayList<String>();
+    ArrayList<String> imageurl=new ArrayList<String>();
 
 
 
@@ -251,6 +251,8 @@ public class HelpSectionFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         Log.i(TAG, "onResponse: " + response.toString());
                         Toast.makeText(getContext(), "Request sent Successfully", Toast.LENGTH_LONG).show();
+                        imagebitmap.clear();
+                        viewPager.getAdapter().notifyDataSetChanged();
                         progressDialog.cancel();
                     }
                 },
@@ -280,7 +282,7 @@ public class HelpSectionFragment extends Fragment {
         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
         imageUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         Log.i("IMGURI2","IMAGE URL "+ imageUri.toString());
-        imageuri.add(imageUri.toString());
+        //imageuri.add(imageUri.toString());
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, 1);
@@ -316,7 +318,7 @@ public class HelpSectionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        test=view.findViewById(R.id.test);
+
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         desc=view.findViewById(R.id.desc);
         userLocationTv = view.findViewById(R.id.TvLocation);
@@ -451,43 +453,49 @@ public class HelpSectionFragment extends Fragment {
                     progressDialog.setCancelable(false);
                     progressDialog.show();
 
-                    uniqueId = AnimalRescueUtil.generateAutoId();
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    animalBitmap.compress(Bitmap.CompressFormat.JPEG,65, byteArrayOutputStream);
-                    byte[] animalImageByteArray = byteArrayOutputStream.toByteArray();
-                    storageReference = firebaseStorage.getReference("Animal Case Images").child(uniqueId);
-                    UploadTask uploadTask = storageReference.putBytes(animalImageByteArray);
-                    uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            Toast.makeText(getContext(), "Image Uploading Successful !", Toast.LENGTH_SHORT).show();
 
-                            storageReference.getDownloadUrl()
-                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            url=uri.toString();
+                    int i;
+                    for ( i = 0; i < imagebitmap.size(); i++) {
+                        uniqueId = AnimalRescueUtil.generateAutoId();
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        imagebitmap.get(i).compress(Bitmap.CompressFormat.JPEG, 65, byteArrayOutputStream);
+                        byte[] animalImageByteArray = byteArrayOutputStream.toByteArray();
+                        storageReference = firebaseStorage.getReference("Animal Case Images").child(uniqueId);
+                        UploadTask uploadTask = storageReference.putBytes(animalImageByteArray);
+                        final int finalI = i;
+                        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                Toast.makeText(getContext(), "Image"+ finalI +" Uploading Successful !", Toast.LENGTH_SHORT).show();
 
-                                            getProfileData(url);
+                                storageReference.getDownloadUrl()
+                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                url = uri.toString();
+                                                imageurl.add(url);
+                                                if(finalI==imagebitmap.size()-1){
+                                                getProfileData();}
 
-                                        }
-                                    });
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.cancel();
-                            Toast.makeText(getContext(), "Image Uploading Failed !", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                            }
+                                        });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                progressDialog.cancel();
+                                Toast.makeText(getContext(), "Image Uploading Failed !", Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
+                    }
                 }
             }
         });
     }
 
 
-    public void uploadData(String url,String userName,String userNo){
+    public void uploadData(String userName,String userNo){
         animalType = spinner.getSelectedItem().toString();
         cityType = spinner2.getSelectedItem().toString();
 
@@ -498,7 +506,7 @@ public class HelpSectionFragment extends Fragment {
                 String description=desc.getText().toString();
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
-               final AnimalHelpCase helpCase = new AnimalHelpCase(userName,animalType,cityType,userLocation,lat,lng,imageuri,false,description);
+               final AnimalHelpCase helpCase = new AnimalHelpCase(userName,animalType,cityType,userLocation,lat,lng,imageurl,false,description);
                helpCase.setUserNo(userNo);
                if(firebaseUser!=null)
                 helpCase.setUserUid(firebaseUser.getUid());
@@ -508,8 +516,8 @@ public class HelpSectionFragment extends Fragment {
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
                             sendNotify(helpCase);
-                            Toast.makeText(getContext(), "Case Created Succesfully", Toast.LENGTH_SHORT).show();
-                            Log.i("HELPCASE","Case Created Succesfully");
+                            Toast.makeText(getContext(), "Case Created Successfully", Toast.LENGTH_SHORT).show();
+                            Log.i("HELPCASE","Case Created Successfully");
                         }
                         else {
                             progressDialog.cancel();
@@ -524,7 +532,7 @@ public class HelpSectionFragment extends Fragment {
         }
     }
 
-    public void getProfileData(final String url){
+    public void getProfileData(){
         db.collection("ProfileData")
                 .document(firebaseUser.getUid()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -533,7 +541,7 @@ public class HelpSectionFragment extends Fragment {
                         if(documentSnapshot.exists() && documentSnapshot.get("name")!=null) {
                             Pname = documentSnapshot.get("name").toString();
                             Pno = documentSnapshot.get("no").toString();
-                            uploadData(url,Pname,Pno);
+                            uploadData(Pname,Pno);
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {

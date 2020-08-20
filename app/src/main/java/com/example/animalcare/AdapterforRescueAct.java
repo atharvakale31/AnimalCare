@@ -20,28 +20,29 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyCustomPagerAdapter extends PagerAdapter {
+public class AdapterforRescueAct extends PagerAdapter {
     Context context;
-    private Bitmap animalBitmap;
+    //private Bitmap animalBitmap;
     ImageView imageView;
 
-    ArrayList<Bitmap> images;
+    ArrayList<String> urls;
     LayoutInflater layoutInflater;
 
 
-    public MyCustomPagerAdapter(Context context, ArrayList<Bitmap> images) {
+    public AdapterforRescueAct(Context context, ArrayList<String> urls) {
         this.context = context;
-        this.images = images;
+        this.urls = urls;
 
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return images.size();
+        return urls.size();
     }
 
     @Override
@@ -58,7 +59,12 @@ public class MyCustomPagerAdapter extends PagerAdapter {
 
 
         ImageView imageView = (ImageView) itemView.findViewById(R.id.imageViewAnimal);
-        imageView.setImageBitmap(images.get(position));
+        //imageView.setImageBitmap(images.get(position));
+        Glide.with(context.getApplicationContext())
+                .load(urls.get(position))
+
+                .placeholder(R.drawable.loadingimages)
+                .into(imageView);
 
 
 

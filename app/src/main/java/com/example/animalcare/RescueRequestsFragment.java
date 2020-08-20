@@ -199,10 +199,11 @@ public class RescueRequestsFragment extends Fragment {
             bundle.putString("ANIMALTYPE", rescueCase.getAnimalType());
             bundle.putString("LAT", String.valueOf(rescueCase.getLatitude()));
             bundle.putString("LNG", String.valueOf(rescueCase.getLongitude()));
-            for(int i=0;i<rescueCase.getPhotourl().size();i++)
-            {
-                bundle.putString("URL"+i, rescueCase.getPhotourl().get(i));
-            }
+            bundle.putStringArrayList("URL",rescueCase.getPhotourl());
+           // for(int i=0;i<rescueCase.getPhotourl().size();i++)
+            //{
+            //    bundle.putString("URL"+i, rescueCase.getPhotourl().get(i));
+           // }
 
             bundle.putString("Location", rescueCase.getUserLocation());
             bundle.putString("cityType", rescueCase.getCityType());
