@@ -24,6 +24,7 @@
         android:roundIcon="@drawable/moti"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDyFCZX4gauYeB5r6lRJPaLXqtwOUvYLpk" />
