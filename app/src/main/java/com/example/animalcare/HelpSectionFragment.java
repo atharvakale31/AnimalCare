@@ -48,6 +48,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -110,7 +111,7 @@ public class HelpSectionFragment extends Fragment {
     private ImageView animalImageView,test;
     private Bitmap animalBitmap;
     private FirebaseStorage firebaseStorage;
-    private StorageReference storageReference;
+    //private StorageReference storageReference;
     private DatabaseReference myDatabaseRef;
     private String uniqueId;
     private Spinner spinner;
@@ -127,6 +128,7 @@ public class HelpSectionFragment extends Fragment {
     //ArrayList<Integer> images=new ArrayList<Integer>();
     ArrayList<Bitmap> imagebitmap=new ArrayList<Bitmap>();
     ArrayList<String> imageurl=new ArrayList<String>();
+    ArrayList<UploadTask> uploadtasks=new ArrayList<UploadTask>();
 
 
 
@@ -252,6 +254,12 @@ public class HelpSectionFragment extends Fragment {
                         Log.i(TAG, "onResponse: " + response.toString());
                         Toast.makeText(getContext(), "Request sent Successfully", Toast.LENGTH_LONG).show();
                         imagebitmap.clear();
+
+                        indexDot=0;
+                       sliderDotspanel.removeAllViews();
+
+                        removedots();
+
                         viewPager.getAdapter().notifyDataSetChanged();
                         progressDialog.cancel();
                     }
@@ -281,12 +289,12 @@ public class HelpSectionFragment extends Fragment {
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
         imageUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Log.i("IMGURI2","IMAGE URL "+ imageUri.toString());
+       // Log.i("IMGURI2","IMAGE URL "+ imageUri.toString());
         //imageuri.add(imageUri.toString());
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, 1);
-        Log.i("IMGURI2","IMAGE URL"+ imageUri.toString());
+        //Log.i("IMGURI2","IMAGE URL"+ imageUri.toString());
 
     }
 
@@ -294,14 +302,17 @@ public class HelpSectionFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.i("HEREIS","TRUE");
-        Log.i("IMGURI","-> "+ imageUri.toString());
+        Log.d("onactivityHEREIS","TRUE");
+        Log.d("IMGURI","-> "+ imageUri.toString());
 
         if(requestCode == 1 && resultCode == RESULT_OK ) {
 
             try {
+                dotscount+=1;
+                displaydot();
                 animalBitmap = MediaStore.Images.Media.getBitmap(
                         getContext().getContentResolver(), imageUri);
+                Log.d("BITMAP", animalBitmap.toString());
                 imagebitmap.add(animalBitmap);
                 viewPager.getAdapter().notifyDataSetChanged();
                 //animalImageView.setImageBitmap(animalBitmap);
@@ -351,8 +362,7 @@ public class HelpSectionFragment extends Fragment {
                 Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
                // images.add(R.drawable.image_3);
                 getImageFromCamera();
-                dotscount+=1;
-                displaydot();
+
 
             }
         });
@@ -455,27 +465,32 @@ public class HelpSectionFragment extends Fragment {
 
 
                     int i;
+                    Log.d("Bitmap size",""+imagebitmap.size());
                     for ( i = 0; i < imagebitmap.size(); i++) {
                         uniqueId = AnimalRescueUtil.generateAutoId();
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                         imagebitmap.get(i).compress(Bitmap.CompressFormat.JPEG, 65, byteArrayOutputStream);
                         byte[] animalImageByteArray = byteArrayOutputStream.toByteArray();
-                        storageReference = firebaseStorage.getReference("Animal Case Images").child(uniqueId);
+                        final StorageReference storageReference = firebaseStorage.getReference("Animal Case Images").child(uniqueId);
                         UploadTask uploadTask = storageReference.putBytes(animalImageByteArray);
+                        uploadtasks.add(uploadTask);
                         final int finalI = i;
+                        Log.d("I in loop",""+finalI);
                         uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                 Toast.makeText(getContext(), "Image"+ finalI +" Uploading Successful !", Toast.LENGTH_SHORT).show();
-
+                                Log.d("UPLOADIMAGE","Image"+ finalI +" Uploading Successful");
                                 storageReference.getDownloadUrl()
                                         .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                             @Override
                                             public void onSuccess(Uri uri) {
                                                 url = uri.toString();
+                                                Log.d("URL in bitmap loop",url);
                                                 imageurl.add(url);
-                                                if(finalI==imagebitmap.size()-1){
-                                                getProfileData();}
+                                                //if(finalI==imagebitmap.size()-1){
+                                                    //Log.d("IMAGEURL",imageurl.get(0)+imageurl.get(1));
+                                               // getProfileData();}
 
                                             }
                                         });
@@ -489,6 +504,14 @@ public class HelpSectionFragment extends Fragment {
                         });
 
                     }
+                    Task<List<Object>> finaltask= Tasks.whenAllSuccess(uploadtasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                        @Override
+                        public void onSuccess(List<Object> objects) {
+                            Log.d("IN GET PROFILE","IN IIIIIIIIIIT");
+                            getProfileData();
+                        }
+                    });
+
                 }
             }
         });
@@ -553,6 +576,25 @@ public class HelpSectionFragment extends Fragment {
             }
         });
     }
+    public void removedots()
+    {
+        int i;
+        for( i = 0; i < dotscount; i++){
+
+            //dots.add(new ImageView(getContext()));
+        dots.get(i).setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.active_dot));
+        dots.get(i).setAlpha(0f);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            params.setMargins(8, 0, 8, 0);
+
+            sliderDotspanel.addView(dots.get(i), params);
+
+
+        }
+        dotscount=0;
+        dots.clear();
+    }
     public void displaydot()
     {
         int i;
@@ -571,9 +613,9 @@ public class HelpSectionFragment extends Fragment {
         }
         indexDot=i;
 
-
-        dots.get(0).setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.active_dot));
-
+        if(!dots.isEmpty()) {
+            dots.get(0).setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.active_dot));
+        }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
