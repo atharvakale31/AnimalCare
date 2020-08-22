@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
+    android:background="@drawable/feedb"
     tools:context=".CreatePostActivity">
 
     <ImageView
@@ -102,7 +104,7 @@
         android:layout_height="200dp"
         android:layout_below="@id/TextViewAddImage"
         android:layout_margin="20dp"
-        app:srcCompat="@drawable/newupload_image" />
+        app:srcCompat="@drawable/uploadphoto" />
 
     <Button
         android:id="@+id/BtnPost"
