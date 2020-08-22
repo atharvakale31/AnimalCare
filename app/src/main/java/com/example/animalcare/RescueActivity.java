@@ -55,7 +55,7 @@ import java.util.Objects;
 
 public class RescueActivity extends AppCompatActivity {
     AdapterforRescueAct AdapterforRescueAct;
-    Button nav,btnCancelRescue, btnRescueCompleted;
+    Button nav,btnCancelRescue, btnRescueCompleted, btnRescueAccept;
     private ImageButton btnCallHelpSeeker;
     private ProgressDialog progressDialog;
     FirebaseAuth firebaseAuth;
@@ -88,6 +88,7 @@ public class RescueActivity extends AppCompatActivity {
         btnCallHelpSeeker = findViewById(R.id.btnCallHelpSeeker);
         btnCancelRescue = findViewById(R.id.btnCancelRescue);
         btnRescueCompleted = findViewById(R.id.btnRescueCompleted);
+        btnRescueAccept = findViewById(R.id.btnRescueAccept);
         bundle = getIntent().getExtras();
         firebaseFirestore = FirebaseFirestore.getInstance();
         name = findViewById(R.id.RuserName);
@@ -138,11 +139,16 @@ public class RescueActivity extends AppCompatActivity {
                 rescueDocumentId=bundle.getString("rescueDocumentId",null);
                 isAccepted = bundle.getBoolean("accepted",false);
                 isCompleted = bundle.getBoolean("isCompleted",false);
-
                 if(isAccepted && rescuerUid!=null && rescuerUid.equals(firebaseUser.getUid())
                         && !isCompleted){
                     btnCancelRescue.setVisibility(View.VISIBLE);
                     btnRescueCompleted.setVisibility(View.VISIBLE);
+                }
+
+                Log.d("RESSTATS","here "+isAccepted+" "+ rescueDocumentId + ""+cityType);
+                if(!isAccepted){
+                    Log.d("ACCRES","true");
+                    btnRescueAccept.setVisibility(View.VISIBLE);
                 }
 
 
@@ -202,9 +208,18 @@ public class RescueActivity extends AppCompatActivity {
                     }
                 });
 
+                btnRescueAccept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!isAccepted && !isCompleted && firebaseUser!=null
+                                && rescueDocumentId!=null && cityType!=null){
+                            acceptRescue();
+                        }
+                    }
+                });
+
             }
         }
-        Log.i("GETISHERE","OKOK");
     }
 
     public void completeRescue(){
@@ -240,6 +255,43 @@ public class RescueActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void acceptRescue(){
+        final ProgressDialog acceptProgressDialog = new ProgressDialog(RescueActivity.this);
+        acceptProgressDialog.setMessage("Getting rescue details...");
+        acceptProgressDialog.setTitle("Rescue...");
+        acceptProgressDialog.setCancelable(false);
+        acceptProgressDialog.show();
+        Map<String, Object> updateRescueData = new HashMap<>();
+        updateRescueData.put("accepted", true);
+        updateRescueData.put("rescueStatus", "Rescue in progress");
+        updateRescueData.put("rescuerUid", firebaseUser.getUid());
+        firebaseFirestore.collection("Cases")
+                .document("Topic")
+                .collection(cityType)
+                .document(rescueDocumentId)
+                .update(updateRescueData).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                if (acceptProgressDialog.isShowing())
+                    acceptProgressDialog.cancel();
+                rescuerUid = firebaseUser.getUid();
+                btnCancelRescue.setVisibility(View.VISIBLE);
+                btnRescueCompleted.setVisibility(View.VISIBLE);
+                btnRescueAccept.setVisibility(View.GONE);
+                Toast.makeText(RescueActivity.this, "Rescue request accepted", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (acceptProgressDialog.isShowing())
+                    acceptProgressDialog.cancel();
+                Toast.makeText(RescueActivity.this, "Failed to accept rescue", Toast.LENGTH_SHORT).show();
+            }
+        });
+        }
+
+
 
     public void cancelRescue(){
 

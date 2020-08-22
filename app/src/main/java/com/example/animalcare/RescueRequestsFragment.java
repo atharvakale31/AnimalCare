@@ -121,14 +121,18 @@ public class RescueRequestsFragment extends Fragment {
                         rescueCardArrayList.clear();
                         for(DocumentSnapshot documentSnapshot : value){
                             if(documentSnapshot!=null) {
-                                AnimalHelpCase animalHelpCase = documentSnapshot.toObject(AnimalHelpCase.class);
-                                if(animalHelpCase!=null) {
-                                    animalHelpCase.setRescueDocumentId(documentSnapshot.getId());
-                                    if(documentSnapshot.getBoolean("isCompleted")!=null)
-                                        animalHelpCase.setCompleted(documentSnapshot.getBoolean("isCompleted"));
-                                    Log.d("ISCOPO"," -> "+animalHelpCase.isCompleted());
-                                    rescueCardArrayList.add(animalHelpCase);
-                                }
+                                String className = Objects.requireNonNull(documentSnapshot.get("photourl")).getClass().getName();
+                                Log.d("OBJCLASS", "" + className);
+                                if (className.equals("java.util.ArrayList")){
+                                    AnimalHelpCase animalHelpCase = documentSnapshot.toObject(AnimalHelpCase.class);
+                                    if (animalHelpCase != null) {
+                                        animalHelpCase.setRescueDocumentId(documentSnapshot.getId());
+                                        if (documentSnapshot.getBoolean("isCompleted") != null)
+                                            animalHelpCase.setCompleted(documentSnapshot.getBoolean("isCompleted"));
+                                        Log.d("ISCOPO", " -> " + animalHelpCase.isCompleted());
+                                        rescueCardArrayList.add(animalHelpCase);
+                                    }
+                            }
                             }
                         }
                         setUpRecyclerview();
@@ -199,7 +203,7 @@ public class RescueRequestsFragment extends Fragment {
             bundle.putString("ANIMALTYPE", rescueCase.getAnimalType());
             bundle.putString("LAT", String.valueOf(rescueCase.getLatitude()));
             bundle.putString("LNG", String.valueOf(rescueCase.getLongitude()));
-            bundle.putStringArrayList("URL",rescueCase.getPhotourl());
+            bundle.putString("URL",rescueCase.getPhotourl().toString());
            // for(int i=0;i<rescueCase.getPhotourl().size();i++)
             //{
             //    bundle.putString("URL"+i, rescueCase.getPhotourl().get(i));

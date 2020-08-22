@@ -17,7 +17,7 @@ public class BottomNavPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if(position==0) {
-            return new FeedSectionFragment();
+            return new RescueRequestsFragment();
         }
         else if(position==1)
             return new FeedSectionFragment();

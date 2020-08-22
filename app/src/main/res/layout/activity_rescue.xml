@@ -253,10 +253,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/viewPager" />
 
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="20dp"
+                android:scaleType="fitXY" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -286,15 +295,20 @@
                     android:textStyle="bold"
                     android:visibility="gone" />
 
-            </LinearLayout>
+                <Button
+                    android:id="@+id/btnRescueAccept"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:backgroundTint="@color/colorPrimaryDark"
+                    android:text="Accept Rescue"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/viewPager"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginVertical="20dp"
-                android:scaleType="fitXY" />
+            </LinearLayout>
 
 
         </LinearLayout>
@@ -327,7 +341,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.35" />
+            app:layout_constraintGuide_begin="144dp" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

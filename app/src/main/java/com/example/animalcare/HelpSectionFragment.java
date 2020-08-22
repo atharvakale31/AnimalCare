@@ -60,6 +60,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -90,6 +91,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
+import static com.google.android.gms.tasks.Tasks.whenAllSuccess;
 
 
 /**
@@ -129,9 +131,8 @@ public class HelpSectionFragment extends Fragment {
     ArrayList<Bitmap> imagebitmap=new ArrayList<Bitmap>();
     ArrayList<String> imageurl=new ArrayList<String>();
     ArrayList<UploadTask> uploadtasks=new ArrayList<UploadTask>();
-
-
-
+    ArrayList<Task<Uri>> taskArrayList = new ArrayList<>();
+    ArrayList<StorageReference> storageReferenceArrayList = new ArrayList<>();
 
     MyCustomPagerAdapter myCustomPagerAdapter;
 
@@ -230,7 +231,9 @@ public class HelpSectionFragment extends Fragment {
             notifcationBody.put("location",helpCase.getUserLocation());
             notifcationBody.put("lat",String.valueOf(helpCase.getLatitude()));
             notifcationBody.put("lng",String.valueOf(helpCase.getLongitude()));
-            notifcationBody.put("description",String.valueOf(helpCase.getDesc()));
+            notifcationBody.put("description",helpCase.getDesc());
+            notifcationBody.put("cityType",helpCase.getCityType());
+            notifcationBody.put("rescueDocumentId",helpCase.getRescueDocumentId());
             Date c = Calendar.getInstance().getTime();
             System.out.println("Current time => " + c);
             SimpleDateFormat df = new SimpleDateFormat("h:mm a dd-MMM-yyyy ");
@@ -260,7 +263,7 @@ public class HelpSectionFragment extends Fragment {
 
                         removedots();
 
-                        viewPager.getAdapter().notifyDataSetChanged();
+                        Objects.requireNonNull(viewPager.getAdapter()).notifyDataSetChanged();
                         progressDialog.cancel();
                     }
                 },
@@ -452,7 +455,7 @@ public class HelpSectionFragment extends Fragment {
                     return;
                 }
 
-                if(animalBitmap==null){
+                if(imagebitmap==null || imagebitmap.size()==0){
                     Toast.makeText(getContext(), "Please capture the Image of injured Animal !", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -462,38 +465,79 @@ public class HelpSectionFragment extends Fragment {
                     progressDialog.setMessage("Getting help");
                     progressDialog.setCancelable(false);
                     progressDialog.show();
-
+                    uploadtasks.clear();
+                    taskArrayList.clear();
+                    imageurl.clear();
+                    storageReferenceArrayList.clear();
 
                     int i;
-                    Log.d("Bitmap size",""+imagebitmap.size());
-                    for ( i = 0; i < imagebitmap.size(); i++) {
+                    Log.d("Bitmap size", "" + imagebitmap.size());
+                    for (i = 0; i < imagebitmap.size(); i++) {
                         uniqueId = AnimalRescueUtil.generateAutoId();
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                         imagebitmap.get(i).compress(Bitmap.CompressFormat.JPEG, 65, byteArrayOutputStream);
                         byte[] animalImageByteArray = byteArrayOutputStream.toByteArray();
                         final StorageReference storageReference = firebaseStorage.getReference("Animal Case Images").child(uniqueId);
                         UploadTask uploadTask = storageReference.putBytes(animalImageByteArray);
+                        storageReferenceArrayList.add(storageReference);
                         uploadtasks.add(uploadTask);
-                        final int finalI = i;
-                        Log.d("I in loop",""+finalI);
-                        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                Toast.makeText(getContext(), "Image"+ finalI +" Uploading Successful !", Toast.LENGTH_SHORT).show();
-                                Log.d("UPLOADIMAGE","Image"+ finalI +" Uploading Successful");
-                                storageReference.getDownloadUrl()
-                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                            @Override
-                                            public void onSuccess(Uri uri) {
-                                                url = uri.toString();
-                                                Log.d("URL in bitmap loop",url);
-                                                imageurl.add(url);
-                                                //if(finalI==imagebitmap.size()-1){
-                                                    //Log.d("IMAGEURL",imageurl.get(0)+imageurl.get(1));
-                                               // getProfileData();}
+//                        final int finalI = i;
+//                        Log.d("I in loop",""+finalI);
+//                        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+//                                Toast.makeText(getContext(), "Image"+ finalI +" Uploading Successful !", Toast.LENGTH_SHORT).show();
+//                                Log.d("UPLOADIMAGE","Image"+ finalI +" Uploading Successful");
+//                                //task.getResult(
+//                                storageReference.getDownloadUrl()
+//                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                            @Override
+//                                            public void onSuccess(Uri uri) {
+//                                                url = uri.toString();
+//                                                Log.d("URL in bitmap loop",url);
+//                                                imageurl.add(url);
+//                                                //if(finalI==imagebitmap.size()-1){
+//                                                    //Log.d("IMAGEURL",imageurl.get(0)+imageurl.get(1));
+//                                               // getProfileData();}
+//
+//                                            }
+//                                        });
+//                            }
+//                        }).addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                progressDialog.cancel();
+//                                Toast.makeText(getContext(), "Image Uploading Failed !", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
 
-                                            }
-                                        });
+                    }
+                    if(uploadtasks!=null && uploadtasks.size()>0){
+                        whenAllSuccess(uploadtasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                            @Override
+                            public void onSuccess(List<Object> objects) {
+                                Log.d("STOREREF", "DONEDONE");
+                                for (StorageReference storageRef : storageReferenceArrayList) {
+                                    taskArrayList.add(storageRef.getDownloadUrl());
+                                }
+                                whenAllSuccess(taskArrayList).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                                    @Override
+                                    public void onSuccess(List<Object> objects) {
+                                        Log.d("GETURLIMG", "OKOKOK");
+                                        for (Object uriObject : objects) {
+                                            Log.d("URLGOT", "true");
+                                            imageurl.add(((Uri) uriObject).toString());
+                                        }
+                                        Toast.makeText(getContext(), "Image Uploading Done !", Toast.LENGTH_SHORT).show();
+                                        getProfileData();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        progressDialog.cancel();
+                                        Toast.makeText(getContext(), "Image Uploading Failed !", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -502,15 +546,7 @@ public class HelpSectionFragment extends Fragment {
                                 Toast.makeText(getContext(), "Image Uploading Failed !", Toast.LENGTH_SHORT).show();
                             }
                         });
-
-                    }
-                    Task<List<Object>> finaltask= Tasks.whenAllSuccess(uploadtasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
-                        @Override
-                        public void onSuccess(List<Object> objects) {
-                            Log.d("IN GET PROFILE","IN IIIIIIIIIIT");
-                            getProfileData();
-                        }
-                    });
+                }
 
                 }
             }
@@ -533,11 +569,13 @@ public class HelpSectionFragment extends Fragment {
                helpCase.setUserNo(userNo);
                if(firebaseUser!=null)
                 helpCase.setUserUid(firebaseUser.getUid());
+                helpCase.setRescueDocumentId(uniqueId);
                 Log.d(TAG, "url: "+ url);
                 db.collection("Cases").document("Topic").collection(cityType).document(uniqueId).set(helpCase).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
+
                             sendNotify(helpCase);
                             Toast.makeText(getContext(), "Case Created Successfully", Toast.LENGTH_SHORT).show();
                             Log.i("HELPCASE","Case Created Successfully");
@@ -582,7 +620,7 @@ public class HelpSectionFragment extends Fragment {
         for( i = 0; i < dotscount; i++){
 
             //dots.add(new ImageView(getContext()));
-        dots.get(i).setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.active_dot));
+        dots.get(i).setImageDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.active_dot));
         dots.get(i).setAlpha(0f);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -601,7 +639,7 @@ public class HelpSectionFragment extends Fragment {
         for( i = indexDot; i < dotscount; i++){
 
             dots.add(new ImageView(getContext()));
-            dots.get(i).setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.non_active_dot));
+            dots.get(i).setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.non_active_dot));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -639,6 +677,5 @@ public class HelpSectionFragment extends Fragment {
             }
         });
     }
-
 
 }
