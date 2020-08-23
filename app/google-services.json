@@ -8,12 +8,64 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:439306989001:android:6b3822d0eccc9c1ea3cc18",
+        "android_client_info": {
+          "package_name": "com.Pie4u.animalcare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439306989001-f6a5t1osnob15q31qr695da0gvvkpk0l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.Pie4u.animalcare",
+            "certificate_hash": "3fb7045d104df5e8394d81ae1c7599ad986e02f2"
+          }
+        },
+        {
+          "client_id": "439306989001-9l9sam6m5hfim395qp052vn09dpq11kb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXXHcNmkb8LgK8xdR6QBjD_bHPx2bCMMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439306989001-9l9sam6m5hfim395qp052vn09dpq11kb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "439306989001-aam001e0iqmgj8s8leneupp5psorq165.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Pie4u.AniCare"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:439306989001:android:22875b2d311dbc51a3cc18",
         "android_client_info": {
           "package_name": "com.example.animalcare"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "439306989001-aph43qqqqe5m85fthpke5euektd82n8k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.animalcare",
+            "certificate_hash": "3fb7045d104df5e8394d81ae1c7599ad986e02f2"
+          }
+        },
         {
           "client_id": "439306989001-kd213iobnk4q5d2faoiqj88s6u19s7qo.apps.googleusercontent.com",
           "client_type": 1,
@@ -54,6 +106,13 @@
             {
               "client_id": "439306989001-9l9sam6m5hfim395qp052vn09dpq11kb.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "439306989001-aam001e0iqmgj8s8leneupp5psorq165.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Pie4u.AniCare"
+              }
             }
           ]
         }

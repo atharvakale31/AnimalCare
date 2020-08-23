@@ -44,7 +44,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_gravity="center"
                 android:text="Self Help"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:background="@drawable/btnback1"/>
 
             <TextView
@@ -58,7 +58,7 @@
                 android:gravity="center"
                 android:text="Provide rescue details"
 
-                android:textColor="@color/common_google_signin_btn_text_dark_pressed"
+                android:textColor="#000000"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -163,7 +163,6 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginRight="20dp"
-                android:background="@android:drawable/ic_menu_gallery"
                 android:scaleType="fitXY" />
 
             <LinearLayout
