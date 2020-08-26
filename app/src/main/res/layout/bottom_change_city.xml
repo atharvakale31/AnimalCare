@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10dp"
+    android:paddingBottom="30dp"
+    android:paddingTop="10dp"
+    android:id="@+id/linear_bottom_city_change">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change your current City"
+        android:textSize="18sp"
+
+        android:textColor="#000000"
+
+        android:layout_gravity="center"/>
+
+   <Spinner
+       android:id="@+id/spinner_change_city"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_margin="40dp"/>
+
+    <Button
+        android:id="@+id/btnUpdateVolunteerCity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Update City"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        android:textAllCaps="false"/>
+
+</LinearLayout>

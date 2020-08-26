@@ -124,12 +124,15 @@ public class editprofile extends AppCompatActivity {
         contactT=findViewById(R.id.contactno);
 
         Intent profileDataIntent = getIntent();
-        nameT.setText(profileDataIntent.getStringExtra("name"));
-        aboutT.setText(profileDataIntent.getStringExtra("about"));
-        contactT.setText(profileDataIntent.getStringExtra("contact"));
-        byteArray = profileDataIntent.getByteArrayExtra("image");
-        bitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
 
+        if(isHome==0) {
+            nameT.setText(profileDataIntent.getStringExtra("name"));
+            aboutT.setText(profileDataIntent.getStringExtra("about"));
+            contactT.setText(profileDataIntent.getStringExtra("contact"));
+            byteArray = profileDataIntent.getByteArrayExtra("image");
+            if(byteArray!=null)
+                    bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        }
         if(bitmap!=null)
             imagedef.setImageBitmap(bitmap);
         save=findViewById(R.id.Savebtn);

@@ -15,6 +15,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaDrm;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,8 +53,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -108,6 +114,9 @@ public class HelpSectionFragment extends Fragment {
     LinearLayout sliderDotspanel;
     private int dotscount;
     //private ImageView[] dots;
+    ArrayList<String> animalList= new ArrayList<>();
+    ArrayList<String> cityList= new ArrayList<>();
+
     ArrayList<ImageView> dots=new ArrayList<ImageView>();
     //ArrayList<Integer> images=new ArrayList<Integer>();
     ArrayList<Bitmap> imagebitmap=new ArrayList<Bitmap>();
@@ -403,6 +412,8 @@ public class HelpSectionFragment extends Fragment {
         myDatabaseRef=FirebaseDatabase.getInstance().getReference("ProfileData").child(firebaseAuth.getCurrentUser().getUid());
         selfhelpbtn=view.findViewById(R.id.selfhelpbtn);
         uploadImage=view.findViewById(R.id.uploadImage);
+        spinner = view.findViewById(R.id.spinner);
+        spinner2 = view.findViewById(R.id.city_spinner);
 
         sliderDotspanel = (LinearLayout) view.findViewById(R.id.SliderDots);
         viewPager = (ViewPager)view.findViewById(R.id.viewPager);
@@ -439,30 +450,14 @@ public class HelpSectionFragment extends Fragment {
 
             }
         });
-        final ArrayList<String> animals = new ArrayList<>();
-        animals.add("Select Animal");
-        animals.add("Dog");
-        animals.add("Cat");
-        animals.add("Cow");
-        animals.add("Snake");
 
-        final ArrayList<String> City = new ArrayList<>();
-        City.add("Select City");
-        City.add("Bhilai");
-        City.add("Durg");
-        City.add("Pune");
-
-        ArrayAdapter<String> arrayAdapter
-                = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item,animals);
-        ArrayAdapter<String> arrayAdapter2
-                = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item,City);
+        getAnimalList();
+        getCityList();
 
 
-        spinner = view.findViewById(R.id.spinner);
-        spinner.setAdapter(arrayAdapter);
 
-        spinner2 = view.findViewById(R.id.city_spinner);
-        spinner2.setAdapter(arrayAdapter2);
+
+
 
 
         final ImageButton locationBtn = view.findViewById(R.id.BtnGetLocation);
@@ -741,6 +736,58 @@ public class HelpSectionFragment extends Fragment {
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+    }
+    private void getCityList(){
+
+        FirebaseFirestore ff= FirebaseFirestore.getInstance();
+        CollectionReference cr= ff.collection("Cities");
+        cr.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                if(error!=null || value==null){
+                    Toast.makeText(getContext(),"Error null City list",Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                cityList.clear();
+                cityList.add("Select City");
+                for(DocumentSnapshot ds : value){
+                    if(ds.exists())
+                        cityList.add(ds.get("name").toString());
+                }
+
+                ArrayAdapter<String> arrayAdapter
+                        = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item,cityList);
+                spinner2.setAdapter(arrayAdapter);
+            }
+        });
+    }
+    private void getAnimalList(){
+
+        FirebaseFirestore ff= FirebaseFirestore.getInstance();
+        CollectionReference cr= ff.collection("Animals");
+        cr.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                if(error!=null || value==null){
+                    Toast.makeText(getContext(),"Error null animal list",Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                animalList.clear();
+                animalList.add("Select Animal");
+                for(DocumentSnapshot ds : value){
+                    if(ds.exists())
+                    animalList.add(ds.get("name").toString());
+                }
+
+                ArrayAdapter<String> arrayAdapter
+                        = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item,animalList);
+                spinner.setAdapter(arrayAdapter);
             }
         });
     }

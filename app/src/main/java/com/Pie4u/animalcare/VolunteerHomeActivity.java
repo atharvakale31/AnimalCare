@@ -39,7 +39,7 @@ public class VolunteerHomeActivity extends AppCompatActivity {
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        SharedPreferences sharedPreferences = getSharedPreferences("com.sjcoders.mynotesapp", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("com.Pie4u.animalcare", Context.MODE_PRIVATE);
         volunteerOrganization = sharedPreferences.getString("topic","topic");
         if(!volunteerOrganization.equals("topic"))
             subscribeToTopic(volunteerOrganization);
@@ -96,10 +96,10 @@ public class VolunteerHomeActivity extends AppCompatActivity {
                                     String volunteerOrganization =value.getString("volunteerOrganization");
                                     if(volunteerOrganization!=null) {
                                         String topic = "topic";
-                                        if (volunteerOrganization.equals("PFA Durg"))
-                                            topic = "Durg";
-                                        else if(volunteerOrganization.equals("PFA Bhilai"))
-                                            topic = "Bhilai";
+                                        if (volunteerOrganization.equals("PFA Durg/Bhilai"))
+                                            topic = "Durg/Bhilai";
+//                                        else if(volunteerOrganization.equals("PFA Bhilai"))
+//                                            topic = "Bhilai";
                                         else if (volunteerOrganization.equals("Pune NGO"))
                                             topic = "Pune";
 

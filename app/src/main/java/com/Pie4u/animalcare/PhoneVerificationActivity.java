@@ -43,7 +43,7 @@ public class PhoneVerificationActivity extends AppCompatActivity {
 
     private EditText editTextVerificationCode;
 
-    private String mVerificationId, phoneNo, email,name, volunteerOrganization;
+    private String mVerificationId, phoneNo, email,name, volunteerOrganization,city;
     private ProgressBar progressBarPhoneVerification;
     private ProgressDialog progressDialog;
     private Button btnVerifyPhoneNo;
@@ -67,6 +67,7 @@ public class PhoneVerificationActivity extends AppCompatActivity {
         isSignUp = getIntent().getBooleanExtra("isSignUp",false);
         if(getIntent().getBooleanExtra("isSignUp",false)){
             email = getIntent().getStringExtra("email");
+            city = getIntent().getStringExtra("city");
             name = getIntent().getStringExtra("name");
             volunteerOrganization = getIntent().getStringExtra("volunteerOrganization");
         }
@@ -197,6 +198,7 @@ public class PhoneVerificationActivity extends AppCompatActivity {
             Map<String,Object> profileDataMap = new HashMap<>();
             profileDataMap.put("volunteerName",name);
             profileDataMap.put("volunteerEmail",email);
+            profileDataMap.put("volunteerCity",city);
             profileDataMap.put("volunteerPhoneNo",phoneNo);
             profileDataMap.put("volunteerOrganization",volunteerOrganization);
 
@@ -208,15 +210,9 @@ public class PhoneVerificationActivity extends AppCompatActivity {
                     if(progressDialog.isShowing())
                         progressDialog.cancel();
 
-                    String topic = "topic";
-                    if (volunteerOrganization.equals("PFA Durg"))
-                        topic = "Durg";
-                    else if(volunteerOrganization.equals("PFA Bhilai"))
-                        topic = "Bhilai";
-                    else if (volunteerOrganization.equals("Pune NGO"))
-                        topic = "Pune";
+                    String topic = city;
 
-                    SharedPreferences sharedPreferences = getSharedPreferences("com.sjcoders.mynotesapp", Context.MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = getSharedPreferences("com.Pie4u.animalcare", Context.MODE_PRIVATE);
                     sharedPreferences.edit().putString("topic",topic).apply();
                     Toast.makeText(PhoneVerificationActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
                     startVolunteerHome();
@@ -263,13 +259,7 @@ public class PhoneVerificationActivity extends AppCompatActivity {
                                 if(value!=null && value.exists()){
                                     String volunteerOrganization =value.getString("volunteerOrganization");
                                     if(volunteerOrganization!=null) {
-                                        String topic = "topic";
-                                        if (volunteerOrganization.equals("PFA Durg"))
-                                            topic = "Durg";
-                                        else if(volunteerOrganization.equals("PFA Bhilai"))
-                                            topic = "Bhilai";
-                                        else if (volunteerOrganization.equals("Pune NGO"))
-                                            topic = "Pune";
+                                        String topic=value.getString("volunteerCity");
 
                                         SharedPreferences sharedPreferences = getSharedPreferences("com.sjcoders.mynotesapp", Context.MODE_PRIVATE);
                                         sharedPreferences.edit().putString("topic",topic).apply();

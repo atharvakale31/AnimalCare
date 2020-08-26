@@ -17,19 +17,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +65,10 @@ public class RescueRequestsFragment extends Fragment {
     private FirebaseFirestore firebaseFirestore;
     private FirebaseUser firebaseUser;
     private ProgressDialog progressDialog;
+    private FloatingActionButton citybtn;
+    private Spinner spinner;
+
+    private View myView;
 
     public RescueRequestsFragment() {
         // Required empty public constructor
@@ -83,6 +97,7 @@ public class RescueRequestsFragment extends Fragment {
         progressDialog.setMessage("Getting rescue details...");
         progressDialog.setTitle("Rescue...");
         progressDialog.setCancelable(false);
+
     }
 
     @Override
@@ -105,6 +120,7 @@ public class RescueRequestsFragment extends Fragment {
                 if(error!=null){
                     Snackbar.make(view,"Some error occurred :(",Snackbar.LENGTH_LONG)
                             .show();
+                    Log.d("help error", "onEvent: "+error.toString());
                 }else {
                     if(value==null || value.isEmpty()){
                         Snackbar snackbar = Snackbar.make(view,"No recent requests !",Snackbar.LENGTH_LONG);
@@ -147,10 +163,64 @@ public class RescueRequestsFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView_rescue_requests);
         rescueCardArrayList = new ArrayList<>();
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("com.sjcoders.mynotesapp", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("com.Pie4u.animalcare", Context.MODE_PRIVATE);
         volunteerOrganization = sharedPreferences.getString("topic","topic");
+        Log.d("topic info", "onViewCreated: "+volunteerOrganization);
         updateHelpRequests(view);
+        myView = view;
+        citybtn =view.findViewById(R.id.cityChangeBtn);
 
+        citybtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCity();
+            }
+        });
+
+
+    }
+
+    private void changeCity(){
+        FirebaseFirestore ff= FirebaseFirestore.getInstance();
+        CollectionReference cr= ff.collection("Cities");
+        final ArrayList<String> cities= new ArrayList<>();
+
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(myView.getContext()//Objects.requireNonNull(VolunteerProfleFragment.this.requireContext())
+                ,R.style.BottomSheetDialogTheme);
+        View bottomSheetView = LayoutInflater.from(getContext())//VolunteerProfleFragment.this.requireContext())
+                .inflate(R.layout.bottom_change_city,
+                        (LinearLayout) myView.findViewById(R.id.linear_bottom_city_change));
+        //updatecitybtn = bottomSheetView.findViewById(R.id.cityChangeBtn);
+        spinner = bottomSheetView.findViewById(R.id.spinner_change_city);
+
+        cr.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                cities.clear();
+                cities.add("Select New City");
+                for(DocumentSnapshot ds :value){
+                    cities.add(ds.get("name").toString());
+                }
+                ArrayAdapter<String> arrayAdapter =
+                        new ArrayAdapter<>(myView.getContext(),android.R.layout.simple_spinner_dropdown_item,cities);
+                spinner.setAdapter(arrayAdapter);
+            }
+        });
+        bottomSheetView.findViewById(R.id.btnUpdateVolunteerCity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(spinner.getSelectedItemPosition()!=0){
+                unSubscribeToTopic(spinner.getSelectedItem().toString());
+                Toast.makeText(myView.getContext(),"City changed",Toast.LENGTH_LONG).show();
+                bottomSheetDialog.cancel();}
+                else
+                {
+                    Toast.makeText(myView.getContext(),"Please select a city",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
     }
 
     public void setUpRecyclerview(){
@@ -260,6 +330,49 @@ public class RescueRequestsFragment extends Fragment {
                 progressDialog.cancel();
         }
     }
+    public void subscribeToTopic(final String topic){
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Subscribed to Topic "+topic;
+                        if (!task.isSuccessful()) {
+                            msg = "Failed to subscribe "+topic;
+                            return;
+                        }
+                        //updateHelpRequests(myView);
+                        volunteerOrganization = topic;
+                        SharedPreferences sharedPreferences = myView.getContext().getSharedPreferences("com.Pie4u.animalcare", Context.MODE_PRIVATE);
+                        sharedPreferences.edit().putString("topic",topic).apply();
+                        Log.i("SUBTOPIC",msg+ " "+ topic);
+                        Toast.makeText(myView.getContext(), "Welcome to "+topic, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(myView.getContext(), VolunteerHomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                });
+
+        }
+
+    public void unSubscribeToTopic(final String item){
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(volunteerOrganization)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "unSubscribed to Topic "+volunteerOrganization;
+                        if (!task.isSuccessful()) {
+                            msg = "Failed to subscribe "+volunteerOrganization;
+                            return;
+                        }
+                        subscribeToTopic(item);
+                    }
+                });
+
+    }
+
+
+
+
 
 //    public void createAlertDialog(final int position, final View itemView){
 //        new AlertDialog.Builder(Objects.requireNonNull(getContext()))

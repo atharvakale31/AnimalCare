@@ -1,6 +1,7 @@
 package com.Pie4u.animalcare;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -12,12 +13,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -29,9 +35,10 @@ public class RescueSignUpActivity extends AppCompatActivity {
     String volunteerPhone ;
     String volunteerEmail ;
     ArrayList<String> spinnerArrayList;
+    private  ArrayList<String> organisationList=new ArrayList<>();
+    private  ArrayList<String> cityList= new ArrayList<>();
+
     private Button btnVolunteerSignUp;
-    private ArrayList<String> orgNames;
-    private ArrayList<String> orgUniqueCodes;
     private EditText editTextVolunteerName, editTextVolunteerPhone, editTextVolunteerEmail, editTextVolunteerOrgCode;
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
@@ -46,22 +53,25 @@ public class RescueSignUpActivity extends AppCompatActivity {
         editTextVolunteerPhone = findViewById(R.id.editTextVolunteerPhone);
         editTextVolunteerEmail = findViewById(R.id.editTextVolunteerEmail);
         editTextVolunteerOrgCode = findViewById(R.id.editTextVolunteerOrgCode);
-        orgNames = new ArrayList<>();
-        orgUniqueCodes = new ArrayList<>();
-        setUpOrgNames();
-        setUpSpinnerOrganization();
+
+//        setUpOrgNames();
+//        setUpSpinnerOrganization();
+        getOrganisationList();
+
 
         btnVolunteerSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 checkVolunteerOrgCode();
+               // retrieveUniqueCodes();
             }
         });
 
     }
 
     public void checkVolunteerOrgCode(){
+        if (organisationList.size()>0){
 
         volunteerName = editTextVolunteerName.getText().toString().trim();
         volunteerPhone = editTextVolunteerPhone.getText().toString().trim();
@@ -107,20 +117,22 @@ public class RescueSignUpActivity extends AppCompatActivity {
             snackbar.show();
             return;
         }
-        if(orgUniqueCodes.get(volunteerOrgPos).equals(volunteerOrgCode)){
-            startPhoneVerification(volunteerOrgPos);
-        }
-        else{
-            String msg = "Organization code not correct :(";
-            Snackbar snackbar = Snackbar.make(spinnerOrganization,msg,Snackbar.LENGTH_LONG);
-            snackbar.setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        retrieveUniqueCodes(volunteerOrgPos,volunteerOrgCode);
 
-                }
-            });
-            snackbar.show();
-        }
+//
+//        else{ if(orgUniqueCodes.get(volunteerOrgPos).equals(volunteerOrgCode)){
+//////            startPhoneVerification(volunteerOrgPos);
+//////        }
+//            String msg = "Organization code not correct :(";
+//            Snackbar snackbar = Snackbar.make(spinnerOrganization,msg,Snackbar.LENGTH_LONG);
+//            snackbar.setAction("OK", new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//
+//                }
+//            });
+//            snackbar.show();
+     }
     }
 
     public void startPhoneVerification(int volunteerOrgPos){
@@ -129,14 +141,15 @@ public class RescueSignUpActivity extends AppCompatActivity {
         intent.putExtra("email",volunteerEmail);
         intent.putExtra("name",volunteerName);
         intent.putExtra("isSignUp",true);
-        intent.putExtra("volunteerOrganization",spinnerArrayList.get(volunteerOrgPos));
+        intent.putExtra("volunteerOrganization",organisationList.get(volunteerOrgPos));
+        intent.putExtra("city",cityList.get(volunteerOrgPos-1));
         startActivity(intent);
     }
 
-    public void retrieveUniqueCodes(int volunteerOrgPos,final String volunteerOrgCode){
+    public void retrieveUniqueCodes(final int volunteerOrgPos, final String volunteerOrgCode){
 
         firebaseFirestore.collection("RescueOrganization")
-                .document(orgNames.get(volunteerOrgPos))
+                .document(organisationList.get(volunteerOrgPos))
                 .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -146,6 +159,7 @@ public class RescueSignUpActivity extends AppCompatActivity {
                     String msg = "";
                     if(orgUniqueCode.equals(volunteerOrgCode)){
                         msg = "Success";
+                        startPhoneVerification(volunteerOrgPos);
                     }else{
                         msg = "Organization code not correct :(";
                     }
@@ -180,27 +194,53 @@ public class RescueSignUpActivity extends AppCompatActivity {
         return phoneNo.matches("[0-9]{10}");
     }
 
-    public void setUpSpinnerOrganization(){
+//    public void setUpSpinnerOrganization(){
+//
+//        spinnerArrayList = new ArrayList<>();
+//        spinnerArrayList.add("Select your organization");
+//        spinnerArrayList.add("PFA Durg/Bhilai");
+//        //spinnerArrayList.add("PFA Bhilai");
+//        spinnerArrayList.add("Pune NGO");
+//
+//    }
 
-        spinnerArrayList = new ArrayList<>();
-        spinnerArrayList.add("Select your organization");
-        spinnerArrayList.add("PFA Durg");
-        spinnerArrayList.add("PFA Bhilai");
-        spinnerArrayList.add("Pune NGO");
-        ArrayAdapter<String> arrayAdapter =
-                new ArrayAdapter<>(RescueSignUpActivity.this,android.R.layout.simple_spinner_dropdown_item,spinnerArrayList);
-        spinnerOrganization.setAdapter(arrayAdapter);
-    }
+//    public void setUpOrgNames(){
+//        orgNames.add("Select your organization");
+//        orgNames.add("PFA_DURG/BHILAI");
+//        //orgNames.add("PFA_BHILAI");
+//        orgNames.add("PUNE_NGO");
+//
+//        orgUniqueCodes.add("");
+//        orgUniqueCodes.add("ay8p3m");
+//       // orgUniqueCodes.add("qn6z7j");
+//        orgUniqueCodes.add("vt71rb");
+//    }
+    private void getOrganisationList(){
 
-    public void setUpOrgNames(){
-        orgNames.add("Select your organization");
-        orgNames.add("PFA_DURG");
-        orgNames.add("PFA_BHILAI");
-        orgNames.add("PUNE_NGO");
+        FirebaseFirestore ff= FirebaseFirestore.getInstance();
+        CollectionReference cr= ff.collection("RescueOrganization");
+        cr.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
-        orgUniqueCodes.add("");
-        orgUniqueCodes.add("ay8p3m");
-        orgUniqueCodes.add("qn6z7j");
-        orgUniqueCodes.add("vt71rb");
+                if(error!=null || value==null){
+                    Toast.makeText(RescueSignUpActivity.this,"Error null organization list",Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                organisationList.clear();
+                organisationList.add("Select Organisation");
+                cityList.clear();
+                for(DocumentSnapshot ds : value){
+                    if(ds.exists())
+                        organisationList.add(ds.get("name").toString());
+                        cityList.add(ds.get("city").toString());
+                }
+
+                ArrayAdapter<String> arrayAdapter =
+                        new ArrayAdapter<>(RescueSignUpActivity.this,android.R.layout.simple_spinner_dropdown_item,organisationList);
+                spinnerOrganization.setAdapter(arrayAdapter);
+            }
+        });
     }
 }
